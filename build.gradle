@@ -1,0 +1,14 @@
+apply plugin: 'java-library'
+
+repositories {
+    maven {
+        url 'http://jcenter.bintray.com'
+    }
+}
+
+dependencies {
+    compile group: 'io.netty', name: 'netty-all', version: '4.1.12.Final'
+
+    testImplementation 'junit:junit:4.12'
+}
+
