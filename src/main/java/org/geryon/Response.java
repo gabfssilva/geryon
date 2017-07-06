@@ -10,10 +10,10 @@ import java.util.Map;
 public class Response {
     private String body;
     private int httpStatus;
-    private Map<String, List<String>> headers;
+    private Map<String, String> headers;
     private String contentType;
 
-    public Response(String body, Integer httpStatus, Map<String, List<String>> headers, String contentType) {
+    public Response(String body, Integer httpStatus, Map<String, String> headers, String contentType) {
         this.body = body;
         this.httpStatus = httpStatus;
         this.headers = headers;
@@ -28,7 +28,7 @@ public class Response {
         return httpStatus;
     }
 
-    public Map<String, List<String>> getHeaders() {
+    public Map<String, String> getHeaders() {
         return headers;
     }
 
@@ -44,8 +44,8 @@ public class Response {
     public static class Builder {
         private String body;
         private int httpStatus = 200;
-        private Map<String, List<String>> headers = new HashMap<>();
-        private String contentType = "text/plain";
+        private Map<String, String> headers = new HashMap<>();
+        private String contentType;
 
         private Builder self = this;
 
@@ -59,7 +59,7 @@ public class Response {
             return self;
         }
 
-        public Builder headers(Map<String, List<String>> headers) {
+        public Builder headers(Map<String, String> headers) {
             this.headers = headers;
             return self;
         }
