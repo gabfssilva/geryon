@@ -1,7 +1,7 @@
 package org.geryon;
 
 /**
- * @author Gabriel Francisco <peo_gfsilva@uolinc.com>
+ * @author Gabriel Francisco <gabfssilva@gmail.com>
  */
 public class RequestIdentifier {
     private String method;

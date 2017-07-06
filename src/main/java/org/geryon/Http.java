@@ -1,9 +1,11 @@
 package org.geryon;
 
-import java.util.HashMap;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 import java.util.function.Function;
 import java.util.function.Supplier;
+
+import static java.util.concurrent.CompletableFuture.completedFuture;
 
 public class Http {
     private static String defaultContentType = "text/plain";
@@ -24,55 +26,99 @@ public class Http {
     }
 
     public static void get(String path, Function<Request, CompletableFuture<?>> handler) {
-        get(path, defaultContentType, handler);
+        get(path, defaultContentType, null, handler);
     }
 
-    public static void get(String path, String produces, Function<Request, CompletableFuture<?>> handler) {
-        handle(path, produces, "GET", handler);
+    public static void get(String path, Function<Request, Boolean> matcher, Function<Request, CompletableFuture<?>> handler) {
+        get(path, defaultContentType, matcher, handler);
     }
 
-    public static void post(String path, String produces, Function<Request, CompletableFuture<?>> handler) {
-        handle(path, produces, "POST", handler);
+    public static void get(String path, String produces, Function<Request, Boolean> matcher, Function<Request, CompletableFuture<?>> handler) {
+        handle(path, produces, "GET", matcher, handler);
     }
 
-    public static void put(String path, String produces, Function<Request, CompletableFuture<?>> handler) {
-        handle(path, produces, "PUT", handler);
+    public static void post(String path, String produces, Function<Request, Boolean> matcher, Function<Request, CompletableFuture<?>> handler) {
+        handle(path, produces, "POST", matcher, handler);
     }
 
-    public static void patch(String path, String produces, Function<Request, CompletableFuture<?>> handler) {
-        handle(path, produces, "PATCH", handler);
+    public static void put(String path, String produces, Function<Request, Boolean> matcher, Function<Request, CompletableFuture<?>> handler) {
+        handle(path, produces, "PUT", matcher, handler);
     }
 
-    public static void delete(String path, String produces, Function<Request, CompletableFuture<?>> handler) {
-        handle(path, produces, "DELETE", handler);
+    public static void patch(String path, String produces, Function<Request, Boolean> matcher, Function<Request, CompletableFuture<?>> handler) {
+        handle(path, produces, "PATCH", matcher, handler);
     }
 
-    public static void handle(String path, String produces, String method, Function<Request, CompletableFuture<?>> handler) {
+    public static void delete(String path, String produces, Function<Request, Boolean> matcher, Function<Request, CompletableFuture<?>> handler) {
+        handle(path, produces, "DELETE", matcher, handler);
+    }
+
+    public static void handle(String path, String produces, String method, Function<Request, Boolean> matcher, Function<Request, CompletableFuture<?>> handler) {
         if (httpServer == null) init();
-        httpServer.addHandler(path, method, new RequestHandler(handler, produces));
+        httpServer.addHandler(new RequestHandler(method, path, produces, handler, matcher));
     }
 
-    public static CompletableFuture<?> ok(Supplier<String> bodySupplier) {
-        return supplyAsync(bodySupplier).thenApply(r -> response().httpStatus(200).body(r).build());
+    public static Response ok(String body) {
+        return response().httpStatus(200).body(body).build();
     }
 
-    public static CompletableFuture<?> created(Supplier<String> uriSupplier) {
-        return supplyAsync(uriSupplier).thenApply(r -> response().httpStatus(201).headers(Maps.<String, String>newMap().put("Location", r).build()).build());
+    public static Response ok() {
+        return response().httpStatus(200).build();
     }
 
-    public static CompletableFuture<?> notFound(Supplier<String> bodySupplier) {
-        return supplyAsync(bodySupplier).thenApply(r -> response().httpStatus(200).body(r).build());
+    public static Response noContent() {
+        return response().httpStatus(204).build();
     }
 
-    public static CompletableFuture<?> internalServerError(Supplier<String> bodySupplier) {
-        return supplyAsync(bodySupplier).thenApply(r -> response().httpStatus(200).body(r).build());
+    public static Response accepted() {
+        return response().httpStatus(202).build();
     }
 
-    public static <T> CompletableFuture<T> supplyAsync(Supplier<T> supplier) {
+    public static Response accepted(String body) {
+        return response().httpStatus(202).body(body).build();
+    }
+
+    public static Response created(String uri) {
+        return response().httpStatus(201).headers(Maps.<String, String>newMap().put("Location", uri).build()).build();
+    }
+
+    public static Response notFound(String body) {
+        return response().httpStatus(404).body(body).build();
+    }
+
+    public static Response notFound() {
+        return response().httpStatus(404).build();
+    }
+
+    public static Response conflict() {
+        return response().httpStatus(419).build();
+    }
+
+    public static Response conflict(String body) {
+        return response().httpStatus(419).body(body).build();
+    }
+
+    public static Response internalServerError() {
+        return response().httpStatus(500).build();
+    }
+
+    public static Response unauthorized() {
+        return response().httpStatus(401).body("unauthorized").build();
+    }
+
+    public static Response internalServerError(String body) {
+        return response().httpStatus(500).body(body).build();
+    }
+
+    public static <T> CompletableFuture<T> supply(Supplier<T> supplier) {
         return CompletableFuture.supplyAsync(supplier);
     }
 
-    public static CompletableFuture<Void> runAsync(Runnable runnable) {
+    public static <T> CompletableFuture<T> supply(Executor executor, Supplier<T> supplier) {
+        return CompletableFuture.supplyAsync(supplier, executor);
+    }
+
+    public static CompletableFuture<Void> run(Runnable runnable) {
         return CompletableFuture.runAsync(runnable);
     }
 

@@ -1,10 +1,9 @@
 package org.geryon;
 
-import java.util.List;
 import java.util.Map;
 
 /**
- * @author Gabriel Francisco <peo_gfsilva@uolinc.com>
+ * @author Gabriel Francisco <gabfssilva@gmail.com>
  */
 public class Request {
     private String url;
@@ -13,35 +12,44 @@ public class Request {
     private String method;
     private Map<String, String> headers;
     private Map<String, String> queryParameters;
+    private Map<String, String> pathParameters;
 
-    public Request(String url, String body, String contentType, String method, Map<String, String> headers, Map<String, String> queryParameters) {
+    public Request(String url, String body, String contentType, String method, Map<String, String> headers, Map<String, String> queryParameters, Map<String, String> pathParameters) {
         this.url = url;
         this.body = body;
         this.contentType = contentType;
         this.method = method;
         this.headers = headers;
         this.queryParameters = queryParameters;
+        this.pathParameters = pathParameters;
     }
 
-    public String getUrl() {
+    public String url() {
         return url;
     }
 
-    public String getBody() {
+    public String body() {
         return body;
     }
 
-    public Map<String, String> getHeaders() {
+    public String contentType() {
+        return contentType;
+    }
+
+    public String method() {
+        return method;
+    }
+
+    public Map<String, String> headers() {
         return headers;
     }
 
-    public Map<String, String> getQueryParameters() {
+    public Map<String, String> queryParameters() {
         return queryParameters;
     }
 
-    @Override
-    public String toString() {
-        return "{" + "request.url='" + url + '\'' + ", request.body='" + body + '\'' + ", request.method='" + method + '\'' + ", request.headers=" + headers + ", request.queryParameters=" + queryParameters + '}';
+    public Map<String, String> pathParameters() {
+        return pathParameters;
     }
 
     public static class Builder {
@@ -51,6 +59,7 @@ public class Request {
         private String method;
         private Map<String, String> headers;
         private Map<String, String> queryParameters;
+        private Map<String, String> pathParameters;
 
         private Builder self = this;
 
@@ -84,8 +93,14 @@ public class Request {
             return self;
         }
 
+        public Builder pathParameters(Map<String, String> pathParameters) {
+            this.pathParameters = pathParameters;
+            return self;
+        }
+
         public Request build() {
-            return new Request(url, body, contentType, method, headers, queryParameters);
+            return new Request(url, body, contentType, method, headers, queryParameters, pathParameters);
         }
     }
 }
+

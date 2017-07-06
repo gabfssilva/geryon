@@ -12,7 +12,7 @@ public class Main {
         port(9090);
         defaultContentType("text/plain");
         
-        get("/", r -> ok(() -> "Hello, " + r.getQueryParameters().get("name")));
+        get("/hello", r -> supply(() -> "Hello, " + r.getQueryParameters().get("name")));
     }
 }
 ```
@@ -26,7 +26,33 @@ fun main(args: Array<String>) {
     port(9090)
     defaultContentType("text/plain")
 
-    get("/hello/default") { ok { "Hello, ${it.queryParameters["name"]}" } }
+    get("/hello") { supply { "Hello, ${it.queryParameters["name"]}" } }
 }
 ```
+
+You can also use filters and interceptos using Kotlin functions:
+
+```kotlin
+import org.geryon.Http.*
+
+fun main(args: Array<String>) {
+    port(9090)
+    defaultContentType("text/plain")
+    
+    fun timer(f: () -> CompletableFuture<out Any>): CompletableFuture<out Any> {
+        val init = System.currentTimeMillis()
+        return f().thenApply {
+             println("total request time in ms:" + (System.currentTimeMillis() - init))
+             it
+        }
+    }
+    
+    get("/hello") { timer {
+        supply { "Hello, ${it.queryParameters["name"]}" }
+      }
+    }
+}
+```
+
+
 
