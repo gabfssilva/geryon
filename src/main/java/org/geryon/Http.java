@@ -1,11 +1,11 @@
 package org.geryon;
 
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import static java.util.concurrent.CompletableFuture.completedFuture;
+import static org.geryon.RequestHandlersHolder.addHandler;
 
 public class Http {
     private static String defaultContentType = "text/plain";
@@ -41,21 +41,53 @@ public class Http {
         handle(path, produces, "POST", matcher, handler);
     }
 
+    public static void post(String path, Function<Request, Boolean> matcher, Function<Request, CompletableFuture<?>> handler) {
+        handle(path, defaultContentType, "POST", matcher, handler);
+    }
+
+    public static void post(String path, Function<Request, CompletableFuture<?>> handler) {
+        handle(path, defaultContentType, "POST", null, handler);
+    }
+
     public static void put(String path, String produces, Function<Request, Boolean> matcher, Function<Request, CompletableFuture<?>> handler) {
         handle(path, produces, "PUT", matcher, handler);
+    }
+
+    public static void put(String path, Function<Request, Boolean> matcher, Function<Request, CompletableFuture<?>> handler) {
+        handle(path, defaultContentType, "PUT", matcher, handler);
+    }
+
+    public static void put(String path, Function<Request, CompletableFuture<?>> handler) {
+        handle(path, defaultContentType, "PUT", null, handler);
     }
 
     public static void patch(String path, String produces, Function<Request, Boolean> matcher, Function<Request, CompletableFuture<?>> handler) {
         handle(path, produces, "PATCH", matcher, handler);
     }
 
+    public static void patch(String path, Function<Request, Boolean> matcher, Function<Request, CompletableFuture<?>> handler) {
+        handle(path, defaultContentType, "PATCH", matcher, handler);
+    }
+
+    public static void patch(String path, Function<Request, CompletableFuture<?>> handler) {
+        handle(path, defaultContentType, "PATCH", null, handler);
+    }
+
     public static void delete(String path, String produces, Function<Request, Boolean> matcher, Function<Request, CompletableFuture<?>> handler) {
         handle(path, produces, "DELETE", matcher, handler);
     }
 
+    public static void delete(String path, Function<Request, Boolean> matcher, Function<Request, CompletableFuture<?>> handler) {
+        handle(path, defaultContentType, "DELETE", matcher, handler);
+    }
+
+    public static void delete(String path, Function<Request, CompletableFuture<?>> handler) {
+        handle(path, defaultContentType, "DELETE", null, handler);
+    }
+
     public static void handle(String path, String produces, String method, Function<Request, Boolean> matcher, Function<Request, CompletableFuture<?>> handler) {
         if (httpServer == null) init();
-        httpServer.addHandler(new RequestHandler(method, path, produces, handler, matcher));
+        addHandler(new RequestHandler(method, path, produces, handler, matcher));
     }
 
     public static Response ok(String body) {
@@ -114,7 +146,7 @@ public class Http {
         return CompletableFuture.supplyAsync(supplier);
     }
 
-    public static <T> CompletableFuture<T> supply(Executor executor, Supplier<T> supplier) {
+    public static <T> CompletableFuture<T> supply(ExecutorService executor, Supplier<T> supplier) {
         return CompletableFuture.supplyAsync(supplier, executor);
     }
 
@@ -129,5 +161,4 @@ public class Http {
     public static void defaultContentType(String defaultContentType) {
         Http.defaultContentType = defaultContentType;
     }
-
 }
