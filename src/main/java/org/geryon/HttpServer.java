@@ -6,8 +6,12 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.http.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import static io.netty.buffer.Unpooled.copiedBuffer;
 
@@ -15,20 +19,26 @@ import static io.netty.buffer.Unpooled.copiedBuffer;
  * @author Gabriel Francisco <gabfssilva@gmail.com>
  */
 class HttpServer {
+    private static final Logger logger = LoggerFactory.getLogger(HttpServer.class);
+
     private RequestDispatcher requestDispatcher;
     private SingleThreadEventLoop singleThreadEventLoop;
-    private ChannelFuture channel;
+    private ChannelFuture future;
     private final EventLoopGroup masterGroup;
     private Integer port;
+    private Integer threads = 1;
 
     public HttpServer(Integer port) {
-        masterGroup = new NioEventLoopGroup(1 , Executors.newSingleThreadExecutor());
+        masterGroup = new NioEventLoopGroup(threads, Executors.newSingleThreadExecutor());
         singleThreadEventLoop = new DefaultEventLoop();
         this.port = port;
         this.requestDispatcher = new RequestDispatcher();
     }
 
     public void start() {
+        logger.info("Starting server on port " + port);
+        logger.info("Event loop will run on " + threads + " thread(s)");
+
         Runtime.getRuntime().addShutdownHook(new Thread(this::shutdown));
 
         try {
@@ -65,17 +75,20 @@ class HttpServer {
                                                                    })
                                                                    .option(ChannelOption.SO_BACKLOG, 128)
                                                                    .childOption(ChannelOption.SO_KEEPALIVE, true);
-            channel = bootstrap.bind(port).sync();
+            future = bootstrap.bind(port).sync();
+            logger.info("Netty server started");
         } catch (final InterruptedException e) {
         }
     }
 
     public void shutdown() {
-        masterGroup.shutdownGracefully();
-
         try {
-            channel.channel().closeFuture().sync();
-        } catch (InterruptedException e) {
+            final long init = System.currentTimeMillis();
+            masterGroup.shutdownGracefully(0, 10, TimeUnit.SECONDS).get();
+            logger.info("Netty server stopped in " + (System.currentTimeMillis() - init) + " ms");
+        } catch (InterruptedException ignored) {
+        } catch (ExecutionException e) {
+            e.printStackTrace();
         }
     }
 }

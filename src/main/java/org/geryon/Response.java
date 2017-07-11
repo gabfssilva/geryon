@@ -59,6 +59,12 @@ public class Response {
             return self;
         }
 
+        public Builder header(String name, String value) {
+            if(this.headers == null) this.headers = new HashMap<>();
+            this.headers.put(name, value);
+            return self;
+        }
+
         public Builder headers(Map<String, String> headers) {
             this.headers = headers;
             return self;

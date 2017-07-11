@@ -4,10 +4,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.*;
 
 import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -18,6 +15,7 @@ import java.util.stream.Collectors;
 
 import static io.netty.buffer.Unpooled.copiedBuffer;
 import static java.util.concurrent.CompletableFuture.supplyAsync;
+import static org.geryon.Tuple.tuple;
 
 /**
  * @author Gabriel Francisco <peo_gfsilva@uolinc.com>
@@ -81,6 +79,8 @@ public class RequestDispatcher implements BiConsumer<FullHttpRequest, ChannelHan
         final String uri = httpRequest.uri().split("\\?")[0];
         final String method = httpRequest.method().name();
 
+        List<Tuple<Boolean, RequestExecution>> candidates = null;
+
         for (RequestHandler handler : requestHandlers) {
             if (!Objects.equals(handler.method(), method)) {
                 continue;
@@ -93,7 +93,10 @@ public class RequestDispatcher implements BiConsumer<FullHttpRequest, ChannelHan
                     continue;
                 }
 
-                return new RequestExecution(handler, request);
+                if(candidates == null) candidates = new ArrayList<>();
+
+                candidates.add(tuple(true, new RequestExecution(handler, request)));
+                continue;
             }
 
             if (handler.path().split("/").length != uri.split("/").length) {
@@ -125,10 +128,23 @@ public class RequestDispatcher implements BiConsumer<FullHttpRequest, ChannelHan
                 continue;
             }
 
-            return new RequestExecution(handler, request);
+            if(candidates == null) candidates = new ArrayList<>();
+            candidates.add(tuple(false, new RequestExecution(handler, request)));
         }
 
-        return new RequestExecution(notFoundHandler(), null);
+        if(candidates == null || candidates.isEmpty()){
+            return new RequestExecution(notFoundHandler(), null);
+        }
+
+        for (Tuple<Boolean, RequestExecution> candidate : candidates) {
+            if(candidate.first()) return candidate.second();
+        }
+
+        if (candidates.size() > 1) {
+            throw new AmbiguousRoutingException("There is more than one route mapped for uri" + uri);
+        }
+
+        return candidates.get(0).second();
     }
 
     public RequestHandler notFoundHandler() {

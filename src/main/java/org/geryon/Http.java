@@ -114,6 +114,10 @@ public class Http {
         return response().httpStatus(201).headers(Maps.<String, String>newMap().put("Location", uri).build()).build();
     }
 
+    public static Response created(String uri, String body) {
+        return response().httpStatus(201).body(body).headers(Maps.<String, String>newMap().put("Location", uri).build()).build();
+    }
+
     public static Response notFound(String body) {
         return response().httpStatus(404).body(body).build();
     }
@@ -156,6 +160,10 @@ public class Http {
 
     public static void port(Integer port) {
         Http.port = port;
+    }
+
+    public static void stop(){
+        httpServer.shutdown();
     }
 
     public static void defaultContentType(String defaultContentType) {
