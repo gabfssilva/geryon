@@ -24,10 +24,12 @@ class PostHttpFeature : FeatureSpec({
         }
 
         scenario("with custom http status") {
-            val response = Unirest.post("http://localhost:8888/test/withBody").body("gabriel").asString()
+            for (i in 0..200) {
+                val response = Unirest.post("http://localhost:8888/test/withBody").body("gabriel").asString()
 
-            response.status shouldBe 202
-            response.body shouldBe "hello, gabriel"
+                response.status shouldBe 202
+                response.body shouldBe "hello, gabriel"
+            }
         }
 
         scenario("with custom response") {

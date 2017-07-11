@@ -4,10 +4,10 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.*;
 
 import java.nio.charset.Charset;
-import java.util.*;
-import java.util.concurrent.Executor;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -79,7 +79,7 @@ public class RequestDispatcher implements BiConsumer<FullHttpRequest, ChannelHan
         final String uri = httpRequest.uri().split("\\?")[0];
         final String method = httpRequest.method().name();
 
-        List<Tuple<Boolean, RequestExecution>> candidates = null;
+        List<RequestExecution> candidates = null;
 
         for (RequestHandler handler : requestHandlers) {
             if (!Objects.equals(handler.method(), method)) {
@@ -93,24 +93,20 @@ public class RequestDispatcher implements BiConsumer<FullHttpRequest, ChannelHan
                     continue;
                 }
 
-                if(candidates == null) candidates = new ArrayList<>();
-
-                candidates.add(tuple(true, new RequestExecution(handler, request)));
-                continue;
+                return new RequestExecution(handler, request);
             }
 
             if (handler.path().split("/").length != uri.split("/").length) {
                 continue;
             }
 
-            final List<String> wantedFields = getFields(handler.path());
+            final List<String> wantedFields = handler.wantedPathParameters();
 
             if (wantedFields.isEmpty()) {
                 continue;
             }
 
-            String pathAsPattern = getPathAsPattern(wantedFields, handler.path());
-            final Matcher m = Pattern.compile(pathAsPattern).matcher(uri);
+            final Matcher m = Pattern.compile(handler.pathAsPattern()).matcher(uri);
 
             if (!m.find() || !m.group().equals(uri)) {
                 continue;
@@ -128,72 +124,25 @@ public class RequestDispatcher implements BiConsumer<FullHttpRequest, ChannelHan
                 continue;
             }
 
-            if(candidates == null) candidates = new ArrayList<>();
-            candidates.add(tuple(false, new RequestExecution(handler, request)));
+            if (candidates == null) candidates = new ArrayList<>();
+            candidates.add(new RequestExecution(handler, request));
         }
 
-        if(candidates == null || candidates.isEmpty()){
+        if (candidates == null || candidates.isEmpty()) {
             return new RequestExecution(notFoundHandler(), null);
         }
 
-        for (Tuple<Boolean, RequestExecution> candidate : candidates) {
-            if(candidate.first()) return candidate.second();
-        }
-
         if (candidates.size() > 1) {
-            throw new AmbiguousRoutingException("There is more than one route mapped for uri" + uri);
+            throw new AmbiguousRoutingException("There is more than one handler mapped for uri " + uri);
         }
 
-        return candidates.get(0).second();
+        return candidates.get(0);
     }
 
     public RequestHandler notFoundHandler() {
         return new RequestHandler("text/plain", r -> supplyAsync(() -> new Response.Builder().httpStatus(404)
                                                                                              .body("not found")
                                                                                              .build()));
-    }
-
-    private static Map<String, String> getPathParameters(List<String> fields, String path, String uri) {
-        String pathAsPattern = getPathAsPattern(fields, path);
-        final Matcher m = Pattern.compile(pathAsPattern).matcher(uri);
-
-        final Maps.MapBuilder<String, String> mapBuilder = Maps.newMap();
-
-        if (m.find()) {
-            for (int i = 1; i <= m.groupCount(); i++) {
-                mapBuilder.put(fields.get(i - 1), m.group(i).replace("/", ""));
-            }
-        }
-
-        return mapBuilder.build();
-    }
-
-    private static String getPathAsPattern(List<String> fields, String path) {
-        String pathAsPattern = path;
-
-        for (String f : fields) {
-            pathAsPattern = pathAsPattern.replace("/:" + f, "(/.+)");
-        }
-        return pathAsPattern;
-    }
-
-    private static List<String> getFields(String path) {
-        final Matcher matcher = PATTERN_PATH_PARAM.matcher(path);
-
-        List<String> fields = new ArrayList<>();
-
-        while (matcher.find()) {
-            String group;
-
-            if (matcher.group(1).contains("/")) {
-                group = matcher.group(1).substring(0, matcher.group(1).indexOf("/")).replace(":", "");
-            } else {
-                group = matcher.group(1).replace(":", "");
-            }
-
-            fields.add(group);
-        }
-        return fields;
     }
 
     private Request getRequest(FullHttpRequest httpRequest, String uri, Map<String, String> headers, Map<String, String> pathParameters) {
