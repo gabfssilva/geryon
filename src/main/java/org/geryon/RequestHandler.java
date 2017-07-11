@@ -7,8 +7,6 @@ import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static java.util.concurrent.CompletableFuture.completedFuture;
-
 /**
  * @author Gabriel Francisco <gabfssilva@gmail.com>
  */
@@ -19,14 +17,14 @@ public class RequestHandler {
     private String path;
     private String produces;
     private Function<Request, CompletableFuture<?>> func;
-    private Function<Request, Boolean> condition;
+    private Function<Request, Boolean> matcher;
     private List<String> wantedPathParameters;
     private String pathAsPattern;
 
     public RequestHandler(String produces, Function<Request, CompletableFuture<?>> func) {
         this.produces = produces;
         this.func = func;
-        this.condition = request -> true;
+        this.matcher = request -> true;
     }
 
     public RequestHandler(String method, String path, String produces, Function<Request, CompletableFuture<?>> func, Function<Request, Boolean> condition) {
@@ -34,7 +32,7 @@ public class RequestHandler {
         this.path = path;
         this.produces = produces;
         this.func = func;
-        this.condition = condition == null ? request -> true : condition;
+        this.matcher = condition == null ? request -> true : condition;
         this.wantedPathParameters = extractWantedPathParameters();
         this.pathAsPattern = extractPathAsPattern();
     }
@@ -55,8 +53,8 @@ public class RequestHandler {
         return func;
     }
 
-    public Function<Request, Boolean> condition() {
-        return condition;
+    public Function<Request, Boolean> matcher() {
+        return matcher;
     }
 
     public List<String> wantedPathParameters() {

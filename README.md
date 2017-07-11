@@ -1,5 +1,5 @@
 # geryon
-A simple reactive HTTP Server written in Java
+A simple reactive HTTP Server written in Java running on top of Netty 4
 
 # How to use it
 

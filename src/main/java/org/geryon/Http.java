@@ -10,6 +10,7 @@ import static org.geryon.RequestHandlersHolder.addHandler;
 public class Http {
     private static String defaultContentType = "text/plain";
     private static Integer port;
+    private static Integer eventLoopThreadNumber;
     private static HttpServer httpServer;
 
     private Http() {
@@ -17,7 +18,8 @@ public class Http {
 
     private static void init() {
         int port = Http.port == null ? 8080 : Http.port;
-        httpServer = new HttpServer(port);
+        int eventLoopThreadNumber = Http.eventLoopThreadNumber == null ? 1 : Http.eventLoopThreadNumber;
+        httpServer = new HttpServer(port, eventLoopThreadNumber);
         httpServer.start();
     }
 
@@ -162,11 +164,27 @@ public class Http {
         Http.port = port;
     }
 
+    public static void eventLoopThreadNumber(Integer eventLoopThreadNumber) {
+        Http.eventLoopThreadNumber = eventLoopThreadNumber;
+    }
+
     public static void stop(){
         httpServer.shutdown();
     }
 
     public static void defaultContentType(String defaultContentType) {
         Http.defaultContentType = defaultContentType;
+    }
+
+    public static String defaultContentType() {
+        return defaultContentType;
+    }
+
+    public static Integer port() {
+        return port;
+    }
+
+    public static Integer eventLoopThreadNumber() {
+        return eventLoopThreadNumber;
     }
 }

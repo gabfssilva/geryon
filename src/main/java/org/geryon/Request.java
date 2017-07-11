@@ -14,7 +14,7 @@ public class Request {
     private Map<String, String> queryParameters;
     private Map<String, String> pathParameters;
 
-    public Request(String url, String body, String contentType, String method, Map<String, String> headers, Map<String, String> queryParameters, Map<String, String> pathParameters) {
+    Request(String url, String body, String contentType, String method, Map<String, String> headers, Map<String, String> queryParameters, Map<String, String> pathParameters) {
         this.url = url;
         this.body = body;
         this.contentType = contentType;
@@ -52,7 +52,7 @@ public class Request {
         return pathParameters;
     }
 
-    public static class Builder {
+    static class Builder {
         private String url;
         private String body;
         private String contentType;
@@ -63,42 +63,42 @@ public class Request {
 
         private Builder self = this;
 
-        public Builder url(String url) {
+        Builder url(String url) {
             this.url = url;
             return self;
         }
 
-        public Builder contentType(String contentType) {
+        Builder contentType(String contentType) {
             this.contentType = contentType;
             return self;
         }
 
-        public Builder body(String body) {
+        Builder body(String body) {
             this.body = body;
             return self;
         }
 
-        public Builder method(String method) {
+        Builder method(String method) {
             this.method = method;
             return self;
         }
 
-        public Builder headers(Map<String, String> headers) {
+        Builder headers(Map<String, String> headers) {
             this.headers = headers;
             return self;
         }
 
-        public Builder queryParameters(Map<String, String> queryParameters) {
+        Builder queryParameters(Map<String, String> queryParameters) {
             this.queryParameters = queryParameters;
             return self;
         }
 
-        public Builder pathParameters(Map<String, String> pathParameters) {
+        Builder pathParameters(Map<String, String> pathParameters) {
             this.pathParameters = pathParameters;
             return self;
         }
 
-        public Request build() {
+        Request build() {
             return new Request(url, body, contentType, method, headers, queryParameters, pathParameters);
         }
     }

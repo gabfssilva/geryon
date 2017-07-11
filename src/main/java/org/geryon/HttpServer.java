@@ -10,7 +10,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import static io.netty.buffer.Unpooled.copiedBuffer;
@@ -22,22 +21,21 @@ class HttpServer {
     private static final Logger logger = LoggerFactory.getLogger(HttpServer.class);
 
     private RequestDispatcher requestDispatcher;
-    private SingleThreadEventLoop singleThreadEventLoop;
     private ChannelFuture future;
     private final EventLoopGroup masterGroup;
     private Integer port;
-    private Integer threads = 1;
+    private Integer eventLoopThreadNumber;
 
-    public HttpServer(Integer port) {
-        masterGroup = new NioEventLoopGroup(threads, Executors.newSingleThreadExecutor());
-        singleThreadEventLoop = new DefaultEventLoop();
+    public HttpServer(Integer port, int eventLoopThreadNumber) {
+        this.eventLoopThreadNumber = eventLoopThreadNumber;
+        masterGroup = new NioEventLoopGroup(eventLoopThreadNumber);
         this.port = port;
         this.requestDispatcher = new RequestDispatcher();
     }
 
     public void start() {
         logger.info("Starting server on port " + port);
-        logger.info("Event loop will run on " + threads + " thread(s)");
+        logger.info("Event loop will run on " + eventLoopThreadNumber + " thread(s)");
 
         Runtime.getRuntime().addShutdownHook(new Thread(this::shutdown));
 
@@ -49,7 +47,7 @@ class HttpServer {
                                                                        public void initChannel(final SocketChannel ch) throws Exception {
                                                                            ch.pipeline().addLast("codec", new HttpServerCodec());
                                                                            ch.pipeline().addLast("aggregator", new HttpObjectAggregator(512 * 1024));
-                                                                           ch.pipeline().addLast(singleThreadEventLoop, "request", new ChannelInboundHandlerAdapter() {
+                                                                           ch.pipeline().addLast("request", new ChannelInboundHandlerAdapter() {
                                                                                  @Override
                                                                                  public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
                                                                                      if (msg instanceof FullHttpRequest) {

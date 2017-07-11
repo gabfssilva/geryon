@@ -2,6 +2,7 @@ package org.geryon;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.*;
+import org.geryon.exceptions.AmbiguousRoutingException;
 
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -15,7 +16,6 @@ import java.util.stream.Collectors;
 
 import static io.netty.buffer.Unpooled.copiedBuffer;
 import static java.util.concurrent.CompletableFuture.supplyAsync;
-import static org.geryon.Tuple.tuple;
 
 /**
  * @author Gabriel Francisco <peo_gfsilva@uolinc.com>
@@ -72,7 +72,7 @@ public class RequestDispatcher implements BiConsumer<FullHttpRequest, ChannelHan
 
                 ctx.writeAndFlush(response);
             }
-        });
+        }).thenRun(httpRequest::release);
     }
 
     public RequestExecution getHandler(FullHttpRequest httpRequest) {
@@ -89,7 +89,7 @@ public class RequestDispatcher implements BiConsumer<FullHttpRequest, ChannelHan
             if (handler.path().equals(uri)) {
                 final Request request = getRequest(httpRequest, uri, getHeaders(httpRequest), null);
 
-                if (!handler.condition().apply(request)) {
+                if (!handler.matcher().apply(request)) {
                     continue;
                 }
 
@@ -120,7 +120,7 @@ public class RequestDispatcher implements BiConsumer<FullHttpRequest, ChannelHan
 
             final Request request = getRequest(httpRequest, uri, getHeaders(httpRequest), mapBuilder.build());
 
-            if (!handler.condition().apply(request)) {
+            if (!handler.matcher().apply(request)) {
                 continue;
             }
 
