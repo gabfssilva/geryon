@@ -26,7 +26,27 @@ fun main(args: Array<String>) {
     port(9090)
     defaultContentType("text/plain")
 
-    get("/hello") { supply { "Hello, ${it.queryParameters["name"]}" } }
+    get("/test/:name") {
+        supply { "hello, ${it.pathParameters()["name"]}" }
+    }
+
+    put("/test/withQueryParameter") {
+        supply { "hello, ${it.queryParameters()["queryParameterName"]}" }
+    }
+
+    patch("/test/withBody") {
+        supply { accepted("hello, ${it.body()}") }
+    }
+
+    post("/test/customResponse") {
+        supply {
+            response()
+               .httpStatus(201)
+               .header("Location", "/test/${it.body()}")
+               .body("hello, ${it.body()}")
+               .build()
+            }
+    }
 }
 ```
 
