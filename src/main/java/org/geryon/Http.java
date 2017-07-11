@@ -170,6 +170,7 @@ public class Http {
 
     public static void stop(){
         httpServer.shutdown();
+        httpServer = null;
     }
 
     public static void defaultContentType(String defaultContentType) {
