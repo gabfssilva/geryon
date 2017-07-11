@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.BiConsumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -82,10 +83,6 @@ public class RequestDispatcher implements BiConsumer<FullHttpRequest, ChannelHan
         List<RequestExecution> candidates = null;
 
         for (RequestHandler handler : requestHandlers) {
-            if (!Objects.equals(handler.method(), method)) {
-                continue;
-            }
-
             if (handler.path().equals(uri)) {
                 final Request request = getRequest(httpRequest, uri, getHeaders(httpRequest), null);
 
@@ -93,7 +90,9 @@ public class RequestDispatcher implements BiConsumer<FullHttpRequest, ChannelHan
                     continue;
                 }
 
-                return new RequestExecution(handler, request);
+                if (candidates == null) candidates = new ArrayList<>();
+                candidates.add(new RequestExecution(handler, request));
+                continue;
             }
 
             if (handler.path().split("/").length != uri.split("/").length) {
@@ -132,17 +131,41 @@ public class RequestDispatcher implements BiConsumer<FullHttpRequest, ChannelHan
             return new RequestExecution(notFoundHandler(), null);
         }
 
-        if (candidates.size() > 1) {
-            throw new AmbiguousRoutingException("There is more than one handler mapped for uri " + uri);
+        RequestExecution mainCandidate = null;
+
+        for (RequestExecution candidate : candidates) {
+            final RequestHandler handler = candidate.handler;
+
+            if (!Objects.equals(handler.method(), method) && mainCandidate != null) {
+                mainCandidate = new RequestExecution(methodNotAllowed(), candidate.request, true);
+                continue;
+            }
+
+            if (handler.path().equals(uri)) {
+                mainCandidate = candidate;
+                continue;
+            }
+
+            if (mainCandidate == null || mainCandidate.handledInternally) {
+                mainCandidate = candidate;
+            }
         }
 
-        return candidates.get(0);
+        if (mainCandidate == null) throw new AmbiguousRoutingException("There is more than one handler mapped for uri " + uri);
+
+        return mainCandidate;
     }
 
     public RequestHandler notFoundHandler() {
-        return new RequestHandler("text/plain", r -> supplyAsync(() -> new Response.Builder().httpStatus(404)
-                                                                                             .body("not found")
-                                                                                             .build()));
+        return new RequestHandler("text/plain", r -> CompletableFuture.completedFuture(new Response.Builder().httpStatus(404)
+                                                                                                             .body("not found")
+                                                                                                             .build()));
+    }
+
+    public RequestHandler methodNotAllowed() {
+        return new RequestHandler("text/plain", r -> CompletableFuture.completedFuture(new Response.Builder().httpStatus(405)
+                                                                                                             .body("method not allowed")
+                                                                                                             .build()));
     }
 
     private Request getRequest(FullHttpRequest httpRequest, String uri, Map<String, String> headers, Map<String, String> pathParameters) {
@@ -171,10 +194,18 @@ public class RequestDispatcher implements BiConsumer<FullHttpRequest, ChannelHan
     private static class RequestExecution {
         private RequestHandler handler;
         private Request request;
+        private Boolean handledInternally;
 
         public RequestExecution(RequestHandler handler, Request request) {
             this.handler = handler;
             this.request = request;
+            this.handledInternally = false;
+        }
+
+        public RequestExecution(RequestHandler handler, Request request, Boolean handledInternally) {
+            this.handler = handler;
+            this.request = request;
+            this.handledInternally = handledInternally;
         }
     }
 }

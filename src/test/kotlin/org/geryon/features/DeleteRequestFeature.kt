@@ -9,46 +9,44 @@ import org.geryon.Http.*
 class DeleteHttpFeature : FeatureSpec({
     feature("http delete request") {
         scenario("with path parameter") {
-            val body = Unirest.delete("http://localhost:8888/test/gabriel").asString().body
-            body shouldBe "hello, gabriel"
+            val body = Unirest.delete("http://localhost:8888/test/delete").asString().body
+            body shouldBe "hello, delete"
         }
 
         scenario("with query parameter") {
-            val body = Unirest.delete("http://localhost:8888/test/withQueryParameter?queryParameterName=gabriel").asString().body
-            body shouldBe "hello, gabriel"
+            val body = Unirest.delete("http://localhost:8888/test/withQueryParameter?queryParameterName=delete").asString().body
+            body shouldBe "hello, delete"
         }
 
         scenario("with body") {
-            val body = Unirest.delete("http://localhost:8888/test/withBody").body("gabriel").asString().body
-            body shouldBe "hello, gabriel"
+            val body = Unirest.delete("http://localhost:8888/test/withBody").body("delete").asString().body
+            body shouldBe "hello, delete"
         }
 
         scenario("with custom http status") {
-            for (i in 0..200) {
-                val response = Unirest.delete("http://localhost:8888/test/withBody").body("gabriel").asString()
+            val response = Unirest.delete("http://localhost:8888/test/withBody").body("delete").asString()
 
-                response.status shouldBe 202
-                response.body shouldBe "hello, gabriel"
-            }
+            response.status shouldBe 202
+            response.body shouldBe "hello, delete"
         }
 
         scenario("with custom response") {
-            val response = Unirest.delete("http://localhost:8888/test/customResponse").body("gabriel").asString()
+            val response = Unirest.delete("http://localhost:8888/test/customResponse").body("delete").asString()
 
             response.status shouldBe 201
-            response.headers["Location"]!![0] shouldBe "/test/gabriel"
-            response.body shouldBe "hello, gabriel"
+            response.headers["Location"]!![0] shouldBe "/test/delete"
+            response.body shouldBe "hello, delete"
         }
 
         scenario("success with matcher") {
-            val response = Unirest.delete("http://localhost:8888/test/withMatcher/versionTest").header("X-Version", "1").body("gabriel").asString()
+            val response = Unirest.delete("http://localhost:8888/test/withMatcher/versionTest").header("X-Version", "1").body("delete").asString()
 
             response.status shouldBe 202
-            response.body shouldBe "accepted, gabriel, with version X-Version = 1 ;)"
+            response.body shouldBe "accepted, delete, with version X-Version = 1 ;)"
         }
 
         scenario("invalid with matcher") {
-            val response = Unirest.delete("http://localhost:8888/test/withMatcher/versionTest").header("X-Version", "2").body("gabriel").asString()
+            val response = Unirest.delete("http://localhost:8888/test/withMatcher/versionTest").header("X-Version", "2").body("delete").asString()
 
             response.status shouldBe 404 //since the matcher returned false
         }
@@ -81,7 +79,7 @@ class DeleteHttpFeature : FeatureSpec({
             }
         }
 
-        delete("/test/withMatcher/versionTest", { it.headers()["X-Version"] == "1"}) {
+        delete("/test/withMatcher/versionTest", { it.headers()["X-Version"] == "1" }) {
             supply { accepted("accepted, ${it.body()}, with version X-Version = 1 ;)") }
         }
 

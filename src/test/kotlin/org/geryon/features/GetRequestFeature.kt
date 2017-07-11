@@ -9,13 +9,13 @@ import org.geryon.Http.*
 class GetHttpFeature : FeatureSpec({
     feature("http get request") {
         scenario("with path parameter") {
-            val body = Unirest.get("http://localhost:8888/test/gabriel").asString().body
-            body shouldBe "hello, gabriel"
+            val body = Unirest.get("http://localhost:8888/test/get").asString().body
+            body shouldBe "hello, get"
         }
 
         scenario("with query parameter") {
-            val body = Unirest.get("http://localhost:8888/test/withQueryParameter?queryParameterName=gabriel").asString().body
-            body shouldBe "hello, gabriel"
+            val body = Unirest.get("http://localhost:8888/test/withQueryParameter?queryParameterName=get").asString().body
+            body shouldBe "hello, get"
         }
 
         scenario("success with matcher") {

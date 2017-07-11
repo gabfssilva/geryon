@@ -9,46 +9,44 @@ import org.geryon.Http.*
 class PatchHttpFeature : FeatureSpec({
     feature("http patch request") {
         scenario("with path parameter") {
-            val body = Unirest.patch("http://localhost:8888/test/gabriel").asString().body
-            body shouldBe "hello, gabriel"
+            val body = Unirest.patch("http://localhost:8888/test/patch").asString().body
+            body shouldBe "hello, patch"
         }
 
         scenario("with query parameter") {
-            val body = Unirest.patch("http://localhost:8888/test/withQueryParameter?queryParameterName=gabriel").asString().body
-            body shouldBe "hello, gabriel"
+            val body = Unirest.patch("http://localhost:8888/test/withQueryParameter?queryParameterName=patch").asString().body
+            body shouldBe "hello, patch"
         }
 
         scenario("with body") {
-            val body = Unirest.patch("http://localhost:8888/test/withBody").body("gabriel").asString().body
-            body shouldBe "hello, gabriel"
+            val body = Unirest.patch("http://localhost:8888/test/withBody").body("patch").asString().body
+            body shouldBe "hello, patch"
         }
 
         scenario("with custom http status") {
-            for (i in 0..200) {
-                val response = Unirest.patch("http://localhost:8888/test/withBody").body("gabriel").asString()
+            val response = Unirest.patch("http://localhost:8888/test/withBody").body("patch").asString()
 
-                response.status shouldBe 202
-                response.body shouldBe "hello, gabriel"
-            }
+            response.status shouldBe 202
+            response.body shouldBe "hello, patch"
         }
 
         scenario("with custom response") {
-            val response = Unirest.patch("http://localhost:8888/test/customResponse").body("gabriel").asString()
+            val response = Unirest.patch("http://localhost:8888/test/customResponse").body("patch").asString()
 
             response.status shouldBe 201
-            response.headers["Location"]!![0] shouldBe "/test/gabriel"
-            response.body shouldBe "hello, gabriel"
+            response.headers["Location"]!![0] shouldBe "/test/patch"
+            response.body shouldBe "hello, patch"
         }
 
         scenario("success with matcher") {
-            val response = Unirest.patch("http://localhost:8888/test/withMatcher/versionTest").header("X-Version", "1").body("gabriel").asString()
+            val response = Unirest.patch("http://localhost:8888/test/withMatcher/versionTest").header("X-Version", "1").body("patch").asString()
 
             response.status shouldBe 202
-            response.body shouldBe "accepted, gabriel, with version X-Version = 1 ;)"
+            response.body shouldBe "accepted, patch, with version X-Version = 1 ;)"
         }
 
         scenario("invalid with matcher") {
-            val response = Unirest.patch("http://localhost:8888/test/withMatcher/versionTest").header("X-Version", "2").body("gabriel").asString()
+            val response = Unirest.patch("http://localhost:8888/test/withMatcher/versionTest").header("X-Version", "2").body("patch").asString()
 
             response.status shouldBe 404 //since the matcher returned false
         }
@@ -81,7 +79,7 @@ class PatchHttpFeature : FeatureSpec({
             }
         }
 
-        patch("/test/withMatcher/versionTest", { it.headers()["X-Version"] == "1"}) {
+        patch("/test/withMatcher/versionTest", { it.headers()["X-Version"] == "1" }) {
             supply { accepted("accepted, ${it.body()}, with version X-Version = 1 ;)") }
         }
 
