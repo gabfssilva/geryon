@@ -151,8 +151,6 @@ public class RequestDispatcher implements BiConsumer<FullHttpRequest, ChannelHan
             }
         }
 
-        if (mainCandidate == null) throw new AmbiguousRoutingException("There is more than one handler mapped for uri " + uri);
-
         return mainCandidate;
     }
 
