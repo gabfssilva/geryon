@@ -11,6 +11,8 @@ import org.geryon.exceptions.AmbiguousRoutingException
 class ServerInitializationFeatures : FeatureSpec({
     feature("server initialization") {
         scenario("ambiguous handlers") {
+            RequestHandlersHolder.requestHandlers().clear()
+
             port(8888)
             defaultContentType("text/plain")
             eventLoopThreadNumber(1)
@@ -32,6 +34,8 @@ class ServerInitializationFeatures : FeatureSpec({
         }
 
         scenario("ambiguous handlers with matchers") {
+            RequestHandlersHolder.requestHandlers().clear()
+
             port(8888)
             defaultContentType("text/plain")
             eventLoopThreadNumber(1)

@@ -2,7 +2,6 @@ package org.geryon;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.*;
-import org.geryon.exceptions.AmbiguousRoutingException;
 
 import java.nio.charset.Charset;
 import java.util.ArrayList;
