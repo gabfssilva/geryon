@@ -29,7 +29,6 @@ class ServerInitializationFeatures : FeatureSpec({
 
             exception.message shouldBe "There is more than one handler mapped for path /test(/.+)"
 
-            stop()
             RequestHandlersHolder.requestHandlers().clear()
         }
 
@@ -54,7 +53,6 @@ class ServerInitializationFeatures : FeatureSpec({
             versionOneResult shouldBe "hello, gabriel, version 1"
             versionTwoResult shouldBe "hello, gabriel, version 2"
 
-            stop()
             RequestHandlersHolder.requestHandlers().clear()
         }
     }
