@@ -19,7 +19,7 @@ import static io.netty.buffer.Unpooled.copiedBuffer;
 import static java.util.concurrent.CompletableFuture.supplyAsync;
 
 /**
- * @author Gabriel Francisco <peo_gfsilva@uolinc.com>
+ * @author Gabriel Francisco <gabfssilva@gmail.com>
  */
 public class RequestDispatcher implements BiConsumer<FullHttpRequest, ChannelHandlerContext> {
     public static final Pattern PATTERN_PATH_PARAM = Pattern.compile("^?(:(.)+/|:(.)+)");
