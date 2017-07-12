@@ -3,6 +3,20 @@ A simple reactive HTTP Server written in Java running on top of Netty 4
 
 # How to use it
 
+## Gradle
+
+```groovy
+repositories {
+    maven {
+        url  "http://dl.bintray.com/geryon/releases"
+    }
+}
+
+dependencies {
+    compile "org.geryon:geryon:0.0.2"
+}
+```
+
 ## Java
 ```java
 import static org.geryon.Http.*;
