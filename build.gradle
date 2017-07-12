@@ -41,24 +41,23 @@ bintray {
         licenses = ['MIT']
 
         version {
-            name = '0.0.1'
-            desc = 'Geryon 0.0.2'
+            name = project.version
+            desc = 'Geryon ' + project.version
             released  = new Date()
-            vcsTag = '0.0.2'
+            vcsTag = project.version
         }
 
-        publications = ['MyPublication']
+        publications = ['java']
     }
 }
 
 publishing {
     publications {
-        MyPublication(MavenPublication) {
-            from components.java
+        java(MavenPublication) {
             artifact fatJar
             groupId 'org.geryon'
             artifactId 'geryon'
-            version '0.0.2'
+            version project.version
         }
     }
 }
@@ -69,6 +68,8 @@ repositories {
     maven { url 'http://timboudreau.com/builds/plugin/repository/everything/'}
     mavenCentral()
 }
+
+afterReleaseBuild.dependsOn bintrayUpload
 
 dependencies {
     compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
