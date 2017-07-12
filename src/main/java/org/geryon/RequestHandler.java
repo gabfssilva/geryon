@@ -24,15 +24,15 @@ public class RequestHandler {
     public RequestHandler(String produces, Function<Request, CompletableFuture<?>> func) {
         this.produces = produces;
         this.func = func;
-        this.matcher = request -> true;
+        this.matcher = AlwaysAllowMatcher.MATCHER;
     }
 
-    public RequestHandler(String method, String path, String produces, Function<Request, CompletableFuture<?>> func, Function<Request, Boolean> condition) {
+    public RequestHandler(String method, String path, String produces, Function<Request, CompletableFuture<?>> func, Function<Request, Boolean> matcher) {
         this.method = method;
         this.path = path;
         this.produces = produces;
         this.func = func;
-        this.matcher = condition == null ? request -> true : condition;
+        this.matcher = matcher == null ? AlwaysAllowMatcher.MATCHER : matcher;
         this.wantedPathParameters = extractWantedPathParameters();
         this.pathAsPattern = extractPathAsPattern();
     }

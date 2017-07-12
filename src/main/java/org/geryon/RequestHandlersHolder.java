@@ -30,11 +30,22 @@ public class RequestHandlersHolder {
             }
 
             if (r.pathAsPattern().equals(handler.pathAsPattern())) {
+                if (!(handler.matcher() instanceof AlwaysAllowMatcher)){
+                    return;
+                }
+
                 throw new AmbiguousRoutingException("There is more than one handler mapped for path " + r.pathAsPattern());
             }
         });
 
         requestHandlers.add(handler);
-        logger.info("Listening to " + handler.path() + " - " + handler.method());
+
+        String logMessage = "Listening to " + handler.path() + " - " + handler.method();
+
+        if(!(handler.matcher() instanceof AlwaysAllowMatcher)){
+            logMessage = logMessage + " - with matcher";
+        }
+
+        logger.info(logMessage);
     }
 }

@@ -7,8 +7,4 @@ public class GeryonException extends RuntimeException {
     public GeryonException(String message) {
         super(message);
     }
-
-    public GeryonException(String message, Throwable cause) {
-        super(message, cause);
-    }
 }
