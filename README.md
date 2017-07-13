@@ -1,10 +1,9 @@
 # geryon
 A simple reactive HTTP Server written in Java running on top of Netty 4
 
-# How to use it
+## Using in your project
 
-## Gradle
-
+#### Gradle
 ```groovy
 repositories {
     maven {
@@ -13,11 +12,13 @@ repositories {
 }
 
 dependencies {
-    compile "org.geryon:geryon:0.0.2"
+    compile "org.geryon:geryon:0.0.4"
 }
 ```
 
 ## Java
+
+
 ```java
 import static org.geryon.Http.*;
 
@@ -30,6 +31,10 @@ public class Main {
     }
 }
 ```
+
+## More examples in:
+
+[Simple Server in Java](https://github.com/gabfssilva/geryon/tree/master/examples/src/main/java/org/geryon/examples/SimpleServer.java)
 
 ## Kotlin
 
