@@ -69,7 +69,7 @@ fun main(args: Array<String>) {
 }
 ```
 
-You can also use filters and interceptos using Kotlin functions:
+You can also use filters and interceptors using Kotlin functions:
 
 ```kotlin
 import org.geryon.Http.*
