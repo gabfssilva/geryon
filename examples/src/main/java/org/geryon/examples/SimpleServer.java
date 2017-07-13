@@ -29,6 +29,17 @@ public class SimpleServer {
             return supply(() -> ok("{\"name\": \"" + name + "\"}"));
         });
 
+        //over here we are using a matcher
+        //a matcher is a function<request, boolean> which returns if the request
+        //matched with the route, so, you can have the same method and path mapped
+        //with different matchers.
+        get("/hello/withMatcher", r -> "1".equals(r.headers().get("Version")), r -> {
+            final String name = r.queryParameters().get("name");
+            // since you cannot block your handler,
+            // you need to return a CompletableFuture with a response, instead of only a response
+            return supply(() -> ok("{\"name\": \"" + name + "\"}"));
+        });
+
         get("/hello/:name", r -> {
             //getting the path parameter
             final String name = r.pathParameters().get("name");
