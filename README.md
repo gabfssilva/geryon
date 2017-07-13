@@ -27,12 +27,12 @@ public class Main {
         port(9090);
         defaultContentType("text/plain");
         
-        get("/hello", r -> supply(() -> "Hello, " + r.getQueryParameters().get("name")));
+        get("/hello", r -> supply(() -> "Hello, " + r.queryParameters().get("name")));
     }
 }
 ```
 
-## More examples in:
+#### More examples in:
 
 [Simple Server in Java](https://github.com/gabfssilva/geryon/tree/master/examples/src/main/java/org/geryon/examples/SimpleServer.java)
 
@@ -93,5 +93,9 @@ fun main(args: Array<String>) {
 }
 ```
 
+#### More examples in:
+//TODO
 
+## Scala
+//TODO
 
