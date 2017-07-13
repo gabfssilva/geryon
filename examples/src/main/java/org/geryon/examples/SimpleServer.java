@@ -19,7 +19,7 @@ public class SimpleServer {
         //default is text/plain
         defaultContentType("application/json");
 
-        //you can define how many thread numbers netty will use for its event loop
+        //you can define how many threads netty will use for its event loop
         eventLoopThreadNumber(1);
 
         get("/hello", r -> {
@@ -31,8 +31,8 @@ public class SimpleServer {
 
         //over here we are using a matcher
         //a matcher is a function<request, boolean> which returns if the request
-        //matched with the route, so, you can have the same method and path mapped
-        //with different matchers.
+        //matched the route, so, you can have the same method and path mapped
+        //to different routes, since you also implemented different matchers.
         get("/hello/withMatcher", r -> "1".equals(r.headers().get("Version")), r -> {
             final String name = r.queryParameters().get("name");
             // since you cannot block your handler,
