@@ -7,7 +7,7 @@ import java.util.concurrent.Executors;
 import static org.geryon.Http.*;
 
 /**
- * @author Gabriel Francisco <peo_gfsilva@uolinc.com>
+ * @author Gabriel Francisco <gabfssilva@gmail.com>
  */
 public class SimpleServer {
     public static void main(String[] args) {
