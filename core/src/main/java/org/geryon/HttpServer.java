@@ -17,7 +17,7 @@ import static io.netty.buffer.Unpooled.copiedBuffer;
 /**
  * @author Gabriel Francisco <gabfssilva@gmail.com>
  */
-class HttpServer {
+public class HttpServer {
     private static final Logger logger = LoggerFactory.getLogger(HttpServer.class);
 
     private RequestDispatcher requestDispatcher;
@@ -26,7 +26,7 @@ class HttpServer {
     private Integer port;
     private Integer eventLoopThreadNumber;
 
-    public HttpServer(Integer port, int eventLoopThreadNumber) {
+    public HttpServer(Integer port, Integer eventLoopThreadNumber) {
         this.eventLoopThreadNumber = eventLoopThreadNumber;
         masterGroup = new NioEventLoopGroup(eventLoopThreadNumber);
         this.port = port;

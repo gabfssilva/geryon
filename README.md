@@ -97,5 +97,40 @@ fun main(args: Array<String>) {
 //TODO
 
 ## Scala
-//TODO
+
+
+#### SBT
+
+```scala
+ libraryDependencies +=
+  "org.geryon" %% "geryon-scala" % "0.0.4"
+```
+
+#### Gradle
+
+```groovy
+dependencies {
+    compile "org.geryon:geryon-scala_2.12:0.0.4"
+}
+```
+
+#### Sample http server
+
+```scala
+import scala.concurrent.Future
+
+object Sample extends App {
+  import scala.concurrent.Future
+  import org.geryon.scaladsl._
+  import scala.concurrent.ExecutionContext.Implicits.global
+
+  port(9999)
+
+  get("/hello") { request =>
+    Future {
+      s"hello, ${request.queryParameters().get("name")}"
+    }
+  }
+}
+```
 
