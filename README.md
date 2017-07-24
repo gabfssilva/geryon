@@ -1,9 +1,9 @@
 # geryon
-A simple reactive HTTP Server written in Java running on top of Netty 4
+Geryon is a library that runs on top of Netty 4, helping you build reactive HTTP services in the JVM.
 
 ## Using in your project
 
-#### Gradle
+#### Importing the library using Gradle
 ```groovy
 repositories {
     maven {
@@ -16,7 +16,7 @@ dependencies {
 }
 ```
 
-## Java
+## A simple GET in Java.
 
 
 ```java
@@ -36,7 +36,7 @@ public class Main {
 
 [Simple Server in Java](https://github.com/gabfssilva/geryon/tree/master/examples/src/main/java/org/geryon/examples/SimpleServer.java)
 
-## Kotlin
+## Examples in Kotlin
 
 ```kotlin
 import org.geryon.Http.*
@@ -69,7 +69,7 @@ fun main(args: Array<String>) {
 }
 ```
 
-You can also use filters and interceptos using Kotlin functions:
+Since Kotlin has functions, it is possible to build interceptors around your service in a very elegant way:
 
 ```kotlin
 import org.geryon.Http.*
