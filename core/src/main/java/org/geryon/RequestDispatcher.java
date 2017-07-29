@@ -9,7 +9,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -31,25 +34,7 @@ public class RequestDispatcher implements BiConsumer<FullHttpRequest, ChannelHan
 
         handler.func().apply(execution.request).thenAcceptAsync((r) -> {
             if (r instanceof Response) {
-                Response resp = (Response) r;
-
-                FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.valueOf(resp
-                        .getHttpStatus()), copiedBuffer(resp.getBody() == null ? new byte[]{} : resp.getBody()
-                                                                                                    .getBytes()));
-
-                if (HttpUtil.isKeepAlive(httpRequest)) {
-                    response.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.KEEP_ALIVE);
-                }
-
-                response.headers()
-                        .set(HttpHeaderNames.CONTENT_TYPE, resp.getContentType() != null ? resp.getContentType() : handler
-                                .produces());
-                response.headers()
-                        .set(HttpHeaderNames.CONTENT_LENGTH, resp.getBody() == null ? 0 : resp.getBody().length());
-
-                resp.getHeaders().forEach((k, v) -> response.headers().set(k, v));
-
-                ctx.writeAndFlush(response);
+                writeResponse(httpRequest, ctx, handler, (Response) r);
             } else {
                 FullHttpResponse response;
                 String resp = null;
@@ -72,7 +57,33 @@ public class RequestDispatcher implements BiConsumer<FullHttpRequest, ChannelHan
 
                 ctx.writeAndFlush(response);
             }
+        }).exceptionally(e -> {
+            Throwable ex = (e instanceof CompletionException ? e.getCause() : e);
+            final BiFunction<Throwable, Request, Response> exceptionHandler = ExceptionHandlers.getHandler(ex.getClass());
+            final Response response = exceptionHandler.apply(ex, execution.request);
+            writeResponse(httpRequest, ctx, handler, response);
+            return null;
         }).thenRun(httpRequest::release);
+    }
+
+    private void writeResponse(FullHttpRequest httpRequest, ChannelHandlerContext ctx, RequestHandler handler, Response resp) {
+        FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.valueOf(resp
+                .getHttpStatus()), copiedBuffer(resp.getBody() == null ? new byte[]{} : resp.getBody()
+                                                                                            .getBytes()));
+
+        if (HttpUtil.isKeepAlive(httpRequest)) {
+            response.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.KEEP_ALIVE);
+        }
+
+        response.headers().set(HttpHeaderNames.CONTENT_TYPE, resp.getContentType() != null ? resp.getContentType() : handler
+                        .produces());
+        response.headers().set(HttpHeaderNames.CONTENT_LENGTH, resp.getBody() == null ? 0 : resp.getBody().length());
+
+        if (resp.getHeaders() != null){
+            resp.getHeaders().forEach((k, v) -> response.headers().set(k, v));
+        }
+
+        ctx.writeAndFlush(response);
     }
 
     public RequestExecution getHandler(FullHttpRequest httpRequest) {
@@ -135,12 +146,13 @@ public class RequestDispatcher implements BiConsumer<FullHttpRequest, ChannelHan
         for (RequestExecution candidate : candidates) {
             final RequestHandler handler = candidate.handler;
 
-            if (!Objects.equals(handler.method(), method) && mainCandidate != null) {
+            final boolean sameMethod = Objects.equals(handler.method(), method);
+            if (!sameMethod && (mainCandidate == null || mainCandidate.handledInternally)) {
                 mainCandidate = new RequestExecution(methodNotAllowed(), candidate.request, true);
                 continue;
             }
 
-            if (handler.path().equals(uri)) {
+            if (sameMethod && handler.path().equals(uri)) {
                 mainCandidate = candidate;
                 continue;
             }

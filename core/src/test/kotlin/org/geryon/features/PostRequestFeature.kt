@@ -52,7 +52,7 @@ class PostHttpFeature : FeatureSpec({
         }
 
         scenario("method not allowed") {
-            val response = Unirest.post("http://localhost:8888/test/postNotAllowed").body("post").asString()
+            val response = Unirest.post("http://localhost:8888/test/post/notAllowed").body("post").asString()
 
             response.status shouldBe 405
         }
@@ -89,7 +89,7 @@ class PostHttpFeature : FeatureSpec({
             supply { accepted("accepted, ${it.body()}, with version X-Version = 1 ;)") }
         }
 
-        put("/test/postNotAllowed") {
+        put("/test/post/notAllowed") {
             supply { accepted("accepted, ${it.body()}") }
         }
 

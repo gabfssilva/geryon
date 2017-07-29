@@ -4,6 +4,7 @@ import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import static java.lang.String.format;
 import static org.geryon.Http.*;
 
 /**
@@ -21,6 +22,15 @@ public class SimpleServer {
 
         //you can define how many threads netty will use for its event loop
         eventLoopThreadNumber(1);
+
+        //you can also define exception handlers for exceptions occurred on the future exception
+        handlerFor(Exception.class, (e, r) -> {
+            String message = format(
+                    "ups, you called %s and it seems that an exception occurred: %s", r.url(), e.getMessage()
+            );
+
+            return internalServerError(message);
+        });
 
         get("/hello", r -> {
             final String name = r.queryParameters().get("name");

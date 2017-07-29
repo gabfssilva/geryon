@@ -39,11 +39,11 @@ class ServerInitializationFeatures : FeatureSpec({
             defaultContentType("text/plain")
             eventLoopThreadNumber(1)
 
-            post("/test/:name", { it.headers()["X-Version"] == "1" }) {
+            get("/test/:name", { it.headers()["X-Version"] == "1" }) {
                 supply { "hello, ${it.pathParameters()["name"]}, version 1" }
             }
 
-            post("/test/:name", { it.headers()["X-Version"] == "2" }) {
+            get("/test/:name", { it.headers()["X-Version"] == "2" }) {
                 supply { "hello, ${it.pathParameters()["name"]}, version 2" }
             }
 

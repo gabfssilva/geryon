@@ -2,6 +2,7 @@ package org.geryon;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -21,6 +22,10 @@ public class Http {
         int eventLoopThreadNumber = Http.eventLoopThreadNumber == null ? 1 : Http.eventLoopThreadNumber;
         httpServer = new HttpServer(port, eventLoopThreadNumber);
         httpServer.start();
+    }
+
+    public static <T extends Throwable> void handlerFor(Class<T> forException, BiFunction<T, Request, Response> handler){
+        ExceptionHandlers.addHandler(forException, handler);
     }
 
     public static Response.Builder response() {

@@ -20,6 +20,7 @@ dependencies {
 
 
 ```java
+//this import does all the trick
 import static org.geryon.Http.*;
 
 public class Main {
@@ -39,6 +40,7 @@ public class Main {
 ## Examples in Kotlin
 
 ```kotlin
+//this import does all the trick
 import org.geryon.Http.*
 
 fun main(args: Array<String>) {
@@ -72,6 +74,7 @@ fun main(args: Array<String>) {
 Since Kotlin has functions, it is possible to build interceptors around your service in a very elegant way:
 
 ```kotlin
+//this import does all the trick
 import org.geryon.Http.*
 
 fun main(args: Array<String>) {
@@ -118,13 +121,17 @@ dependencies {
 
 ```scala
 import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
 
 object Sample extends App {
-  import scala.concurrent.Future
+  //this import does all the trick
   import org.geryon.scaladsl._
-  import scala.concurrent.ExecutionContext.Implicits.global
 
   port(9999)
+  
+  handlerFor[RuntimeException] { (exception, request) =>
+    internalServerError(s"ups, you called ${request.url} and it seems that an exception occurred: ${exception.getMessage}")
+  }
 
   get("/hello") { request =>
     Future {

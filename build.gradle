@@ -25,6 +25,12 @@ apply plugin: 'net.researchgate.release'
 project(":examples") {
     apply plugin: 'java-library'
 
+    repositories {
+        maven { url 'http://jcenter.bintray.com' }
+        maven { url 'http://timboudreau.com/builds/plugin/repository/everything/' }
+        mavenCentral()
+    }
+
     dependencies {
         compile project(":core")
 
