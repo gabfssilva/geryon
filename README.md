@@ -143,7 +143,7 @@ object Sample extends App {
 
   get("/hello") { request =>
     Future {
-      s"hello, ${request.queryParameters().get("name")}"
+      s"hello, ${request.queryParameters("name")}"
     }
   }
 }
