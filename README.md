@@ -28,6 +28,14 @@ public class Main {
         port(9090);
         defaultContentType("text/plain");
         
+        handlerFor(Exception.class, (e, r) -> {
+            String message = format(
+                "ups, you called %s and it seems that an exception occurred: %s", r.url(), e.getMessage()
+            );
+        
+            return internalServerError(message);
+        });
+        
         get("/hello", r -> supply(() -> "Hello, " + r.queryParameters().get("name")));
     }
 }
@@ -46,7 +54,7 @@ import org.geryon.Http.*
 fun main(args: Array<String>) {
     port(9090)
     defaultContentType("text/plain")
-
+    
     get("/test/:name") {
         supply { "hello, ${it.pathParameters()["name"]}" }
     }
