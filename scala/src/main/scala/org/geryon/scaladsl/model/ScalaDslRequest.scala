@@ -13,8 +13,8 @@ object ScalaDslRequest {
     new ScalaDslRequest(
       original = request,
       url = request.url(),
-      body = Option(request.body()),
-      contentType = request.contentType(),
+      body = if(request.body() == null || request.body().isEmpty) None else Some(request.body()),
+      contentType = Option(request.contentType()),
       method = request.method(),
       headers = if (request.headers() == null) Map.empty else request.headers().asScala.toMap,
       queryParameters = if (request.queryParameters() == null) Map.empty else request.queryParameters().asScala.toMap,
@@ -24,7 +24,7 @@ object ScalaDslRequest {
 
 case class ScalaDslRequest(url: String,
                            body: Option[String],
-                           contentType: String,
+                           contentType: Option[String],
                            method: String,
                            headers: Map[String, String],
                            queryParameters: Map[String, String],
