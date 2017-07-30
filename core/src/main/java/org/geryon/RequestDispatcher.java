@@ -1,5 +1,6 @@
 package org.geryon;
 
+import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.*;
 
@@ -12,13 +13,11 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
-import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static io.netty.buffer.Unpooled.copiedBuffer;
-import static java.util.concurrent.CompletableFuture.supplyAsync;
 
 /**
  * @author Gabriel Francisco <gabfssilva@gmail.com>
@@ -33,28 +32,32 @@ public class RequestDispatcher implements BiConsumer<FullHttpRequest, ChannelHan
         final RequestHandler handler = execution.handler;
 
         handler.func().apply(execution.request).thenAcceptAsync((r) -> {
+            FullHttpResponse response;
+
             if (r instanceof Response) {
-                writeResponse(httpRequest, ctx, handler, (Response) r);
+                response = standardResponse(httpRequest, handler, (Response) r);
             } else {
-                writeRawResponse(httpRequest, ctx, handler, r);
+                response = rawResponse(httpRequest, handler, r);
             }
+
+            ctx.writeAndFlush(response);
         }).exceptionally(e -> {
             Throwable ex = (e instanceof CompletionException ? e.getCause() : e);
             final BiFunction<Throwable, Request, Response> exceptionHandler = ExceptionHandlers.getHandler(ex.getClass());
             final Response response = exceptionHandler.apply(ex, execution.request);
-            writeResponse(httpRequest, ctx, handler, response);
+            FullHttpResponse httpResponse = standardResponse(httpRequest, handler, response);
+            ctx.writeAndFlush(httpResponse);
             return null;
         }).thenRun(httpRequest::release);
     }
 
-    private void writeRawResponse(FullHttpRequest httpRequest, ChannelHandlerContext ctx, RequestHandler handler, Object r) {
+    private FullHttpResponse rawResponse(FullHttpRequest httpRequest, RequestHandler handler, Object r) {
         FullHttpResponse response;
         String resp = null;
 
         if (r != null) {
             resp = r.toString();
-            response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK, copiedBuffer(resp
-                    .getBytes()));
+            response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK, copiedBuffer(resp.getBytes()));
         } else {
             response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.NO_CONTENT);
         }
@@ -64,38 +67,44 @@ public class RequestDispatcher implements BiConsumer<FullHttpRequest, ChannelHan
         }
 
         response.headers().set(HttpHeaderNames.CONTENT_TYPE, handler.produces());
-
         response.headers().set(HttpHeaderNames.CONTENT_LENGTH, resp == null ? 0 : resp.length());
 
         if (handler.defaultHeaders() != null) {
-            handler.defaultHeaders().forEach((k, v) -> response.headers().set(k, v));
+            setHeaders(response, handler.defaultHeaders());
         }
 
-        ctx.writeAndFlush(response);
+        return response;
     }
 
-    private void writeResponse(FullHttpRequest httpRequest, ChannelHandlerContext ctx, RequestHandler handler, Response resp) {
-        FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.valueOf(resp
-                .getHttpStatus()), copiedBuffer(resp.getBody() == null ? new byte[]{} : resp.getBody()
-                                                                                            .getBytes()));
+    private FullHttpResponse standardResponse(FullHttpRequest httpRequest, RequestHandler handler, Response resp) {
+        ByteBuf body = copiedBuffer(resp.getBody() == null ? new byte[]{} : resp.getBody().getBytes());
+        HttpResponseStatus status = HttpResponseStatus.valueOf(resp.getHttpStatus());
+        FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, status, body);
 
         if (HttpUtil.isKeepAlive(httpRequest)) {
             response.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.KEEP_ALIVE);
         }
 
-        response.headers().set(HttpHeaderNames.CONTENT_TYPE, resp.getContentType() != null ? resp.getContentType() : handler
-                        .produces());
-        response.headers().set(HttpHeaderNames.CONTENT_LENGTH, resp.getBody() == null ? 0 : resp.getBody().length());
+        String produces = resp.getContentType() != null ? resp.getContentType() : handler.produces();
+        response.headers().set(HttpHeaderNames.CONTENT_TYPE, produces);
+
+        int contentLength = resp.getBody() == null ? 0 : resp.getBody().length();
+        response.headers().set(HttpHeaderNames.CONTENT_LENGTH, contentLength);
 
         if (handler.defaultHeaders() != null) {
-            handler.defaultHeaders().forEach((k, v) -> response.headers().set(k, v));
+            setHeaders(response, handler.defaultHeaders());
         }
 
-        if (resp.getHeaders() != null){
-            resp.getHeaders().forEach((k, v) -> response.headers().set(k, v));
+        if (resp.getHeaders() != null) {
+            setHeaders(response, resp.getHeaders());
         }
 
-        ctx.writeAndFlush(response);
+        return response;
+    }
+
+
+    private void setHeaders(FullHttpResponse response, Map<String, String> headers) {
+        headers.forEach((k, v) -> response.headers().set(k, v));
     }
 
     public RequestExecution getHandler(FullHttpRequest httpRequest) {
