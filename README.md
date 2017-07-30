@@ -49,8 +49,8 @@ fun main(args: Array<String>) {
 }
 ```
 
-#### More examples in:
-//TODO
+#### More examples in Kotlin:
+[Simple Server in Kotlin](https://github.com/gabfssilva/geryon/tree/master/kotlin-examples/src/main/scala/org/geryon/examples/kotlin/SimpleServer.kt)
 
 ## The obligatory Hello World in Scala
 
