@@ -36,26 +36,7 @@ public class RequestDispatcher implements BiConsumer<FullHttpRequest, ChannelHan
             if (r instanceof Response) {
                 writeResponse(httpRequest, ctx, handler, (Response) r);
             } else {
-                FullHttpResponse response;
-                String resp = null;
-
-                if (r != null) {
-                    resp = r.toString();
-                    response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK, copiedBuffer(resp
-                            .getBytes()));
-                } else {
-                    response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.NO_CONTENT);
-                }
-
-                if (HttpUtil.isKeepAlive(httpRequest)) {
-                    response.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.KEEP_ALIVE);
-                }
-
-                response.headers().set(HttpHeaderNames.CONTENT_TYPE, handler.produces());
-
-                response.headers().set(HttpHeaderNames.CONTENT_LENGTH, resp == null ? 0 : resp.length());
-
-                ctx.writeAndFlush(response);
+                writeRawResponse(httpRequest, ctx, handler, r);
             }
         }).exceptionally(e -> {
             Throwable ex = (e instanceof CompletionException ? e.getCause() : e);
@@ -64,6 +45,33 @@ public class RequestDispatcher implements BiConsumer<FullHttpRequest, ChannelHan
             writeResponse(httpRequest, ctx, handler, response);
             return null;
         }).thenRun(httpRequest::release);
+    }
+
+    private void writeRawResponse(FullHttpRequest httpRequest, ChannelHandlerContext ctx, RequestHandler handler, Object r) {
+        FullHttpResponse response;
+        String resp = null;
+
+        if (r != null) {
+            resp = r.toString();
+            response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK, copiedBuffer(resp
+                    .getBytes()));
+        } else {
+            response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.NO_CONTENT);
+        }
+
+        if (HttpUtil.isKeepAlive(httpRequest)) {
+            response.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.KEEP_ALIVE);
+        }
+
+        response.headers().set(HttpHeaderNames.CONTENT_TYPE, handler.produces());
+
+        response.headers().set(HttpHeaderNames.CONTENT_LENGTH, resp == null ? 0 : resp.length());
+
+        if (handler.defaultHeaders() != null) {
+            handler.defaultHeaders().forEach((k, v) -> response.headers().set(k, v));
+        }
+
+        ctx.writeAndFlush(response);
     }
 
     private void writeResponse(FullHttpRequest httpRequest, ChannelHandlerContext ctx, RequestHandler handler, Response resp) {
