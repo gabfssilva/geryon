@@ -1,4 +1,4 @@
-package org.geryon.scaladsl.model
+package org.geryon.scaladsl
 
 import org.geryon.Response
 
@@ -23,8 +23,8 @@ class ScalaDslResponseBuilder {
     this
   }
 
-  def headers(headers: Map[String, String]): ScalaDslResponseBuilder = {
-    this.headers = headers
+  def headers(headers: (String, String)*): ScalaDslResponseBuilder = {
+    this.headers = this.headers ++ headers
     this
   }
 

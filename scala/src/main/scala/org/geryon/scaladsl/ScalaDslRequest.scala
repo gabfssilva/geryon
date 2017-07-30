@@ -1,9 +1,8 @@
-package org.geryon.scaladsl.model
+package org.geryon.scaladsl
 
 import org.geryon.Request
 
 import scala.collection.JavaConverters._
-import scala.collection.mutable
 
 /**
   * @author Gabriel Francisco <gabfssilva@gmail.com>

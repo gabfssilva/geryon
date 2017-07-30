@@ -2,10 +2,9 @@ package org.geryon
 
 import scala.collection.JavaConverters._
 import java.util.concurrent.CompletableFuture
-import java.util.function
+import java.util.function.{Function => JavaFunction}
 
 import org.geryon.RequestHandlersHolder.addHandler
-import org.geryon.scaladsl.model.{ScalaDslRequest, ScalaDslResponse}
 
 import scala.collection.mutable
 import scala.concurrent.{ExecutionContext, Future}
@@ -29,70 +28,70 @@ package object scaladsl {
     ExceptionHandlers.addHandler(clazz, (t: T, r: Request) => handler(t, r))
   }
 
-  def get(path: String)(handler: Function[ScalaDslRequest, Future[_]])(implicit ec: ExecutionContext): Unit = {
+  def get(path: String)(handler: ScalaDslRequest => Future[_])(implicit ec: ExecutionContext): Unit = {
     get(path, HttpServerHandler.defaultContentType, null)(handler)
   }
 
-  def get(path: String, matcher: Function[ScalaDslRequest, Boolean])(handler: Function[ScalaDslRequest, Future[_]])(implicit ec: ExecutionContext): Unit = {
+  def get(path: String, matcher: ScalaDslRequest => Boolean)(handler: ScalaDslRequest => Future[_])(implicit ec: ExecutionContext): Unit = {
     get(path, HttpServerHandler.defaultContentType, matcher)(handler)
   }
 
-  def get(path: String, produces: String, matcher: Function[ScalaDslRequest, Boolean])(handler: Function[ScalaDslRequest, Future[_]])(implicit ec: ExecutionContext): Unit = {
+  def get(path: String, produces: String, matcher: ScalaDslRequest => Boolean)(handler: ScalaDslRequest => Future[_])(implicit ec: ExecutionContext): Unit = {
     handle(path, produces, "GET", matcher, handler)
   }
 
-  def post(path: String, produces: String, matcher: Function[ScalaDslRequest, Boolean])(handler: Function[ScalaDslRequest, Future[_]])(implicit ec: ExecutionContext): Unit = {
+  def post(path: String, produces: String, matcher: ScalaDslRequest => Boolean)(handler: ScalaDslRequest => Future[_])(implicit ec: ExecutionContext): Unit = {
     handle(path, produces, "POST", matcher, handler)
   }
 
-  def post(path: String, matcher: Function[ScalaDslRequest, Boolean])(handler: Function[ScalaDslRequest, Future[_]])(implicit ec: ExecutionContext): Unit = {
+  def post(path: String, matcher: ScalaDslRequest => Boolean)(handler: ScalaDslRequest => Future[_])(implicit ec: ExecutionContext): Unit = {
     handle(path, HttpServerHandler.defaultContentType, "POST", matcher, handler)
   }
 
-  def post(path: String)(handler: Function[ScalaDslRequest, Future[_]])(implicit ec: ExecutionContext): Unit = {
+  def post(path: String)(handler: ScalaDslRequest => Future[_])(implicit ec: ExecutionContext): Unit = {
     handle(path, HttpServerHandler.defaultContentType, "POST", null, handler)
   }
 
-  def put(path: String, produces: String, matcher: Function[ScalaDslRequest, Boolean])(handler: Function[ScalaDslRequest, Future[_]])(implicit ec: ExecutionContext): Unit = {
+  def put(path: String, produces: String, matcher: ScalaDslRequest => Boolean)(handler: ScalaDslRequest => Future[_])(implicit ec: ExecutionContext): Unit = {
     handle(path, produces, "PUT", matcher, handler)
   }
 
-  def put(path: String, matcher: Function[ScalaDslRequest, Boolean])(handler: Function[ScalaDslRequest, Future[_]])(implicit ec: ExecutionContext): Unit = {
+  def put(path: String, matcher: ScalaDslRequest => Boolean)(handler: ScalaDslRequest => Future[_])(implicit ec: ExecutionContext): Unit = {
     handle(path, HttpServerHandler.defaultContentType, "PUT", matcher, handler)
   }
 
-  def put(path: String)(handler: Function[ScalaDslRequest, Future[_]])(implicit ec: ExecutionContext): Unit = {
+  def put(path: String)(handler: ScalaDslRequest => Future[_])(implicit ec: ExecutionContext): Unit = {
     handle(path, HttpServerHandler.defaultContentType, "PUT", null, handler)
   }
 
-  def patch(path: String, produces: String, matcher: Function[ScalaDslRequest, Boolean])(handler: Function[ScalaDslRequest, Future[_]])(implicit ec: ExecutionContext): Unit = {
+  def patch(path: String, produces: String, matcher: ScalaDslRequest => Boolean)(handler: ScalaDslRequest => Future[_])(implicit ec: ExecutionContext): Unit = {
     handle(path, produces, "PATCH", matcher, handler)
   }
 
-  def patch(path: String, matcher: Function[ScalaDslRequest, Boolean])(handler: Function[ScalaDslRequest, Future[_]])(implicit ec: ExecutionContext): Unit = {
+  def patch(path: String, matcher: ScalaDslRequest => Boolean)(handler: ScalaDslRequest => Future[_])(implicit ec: ExecutionContext): Unit = {
     handle(path, HttpServerHandler.defaultContentType, "PATCH", matcher, handler)
   }
 
-  def patch(path: String)(handler: Function[ScalaDslRequest, Future[_]])(implicit ec: ExecutionContext): Unit = {
+  def patch(path: String)(handler: ScalaDslRequest => Future[_])(implicit ec: ExecutionContext): Unit = {
     handle(path, HttpServerHandler.defaultContentType, "PATCH", null, handler)
   }
 
-  def delete(path: String, produces: String, matcher: Function[ScalaDslRequest, Boolean])(handler: Function[ScalaDslRequest, Future[_]])(implicit ec: ExecutionContext): Unit = {
+  def delete(path: String, produces: String, matcher: ScalaDslRequest => Boolean)(handler: ScalaDslRequest => Future[_])(implicit ec: ExecutionContext): Unit = {
     handle(path, produces, "DELETE", matcher, handler)
   }
 
-  def delete(path: String, matcher: Function[ScalaDslRequest, Boolean])(handler: Function[ScalaDslRequest, Future[_]])(implicit ec: ExecutionContext): Unit = {
+  def delete(path: String, matcher: ScalaDslRequest => Boolean)(handler: ScalaDslRequest => Future[_])(implicit ec: ExecutionContext): Unit = {
     handle(path, HttpServerHandler.defaultContentType, "DELETE", matcher, handler)
   }
 
-  def delete(path: String)(handler: Function[ScalaDslRequest, Future[_]])(implicit ec: ExecutionContext): Unit = {
+  def delete(path: String)(handler: ScalaDslRequest => Future[_])(implicit ec: ExecutionContext): Unit = {
     handle(path, HttpServerHandler.defaultContentType, "DELETE", null, handler)
   }
 
-  def handle(path: String, produces: String, method: String, matcher: Function[ScalaDslRequest, Boolean], handler: Function[ScalaDslRequest, Future[_ >: Any]])(implicit ec: ExecutionContext): Unit = {
+  def handle(path: String, produces: String, method: String, matcher: ScalaDslRequest => Boolean, handler: ScalaDslRequest => Future[_ >: Any])(implicit ec: ExecutionContext): Unit = {
     if (HttpServerHandler.httpServer == null) init()
 
-    val javaFunc: function.Function[Request, CompletableFuture[_ <: Any]] = (t: Request) => {
+    val javaFunc: JavaFunction[Request, CompletableFuture[_ <: Any]] = (t: Request) => {
       val promise = new CompletableFuture[Any]()
 
       handler
@@ -105,13 +104,12 @@ package object scaladsl {
       promise
     }
 
-    val javaMatcher: function.Function[Request, java.lang.Boolean] =
-      if (matcher == null) null else (t: Request) => matcher.apply(t)
+    val javaMatcher: JavaFunction[Request, java.lang.Boolean] = if (matcher == null) null else (t: Request) => matcher.apply(t)
 
     addHandler(new RequestHandler(method, path, produces, javaFunc, javaMatcher, HttpServerHandler.defaultHeaders.asJava))
   }
 
-  def response = new model.ScalaDslResponseBuilder
+  def response = new ScalaDslResponseBuilder
 
   def ok(body: String): ScalaDslResponse = response.httpStatus(200).body(body).build
 
@@ -123,9 +121,9 @@ package object scaladsl {
 
   def accepted(body: String): ScalaDslResponse = response.httpStatus(202).body(body).build
 
-  def created(uri: String): ScalaDslResponse = response.httpStatus(201).headers(Map("Location" -> uri)).build
+  def created(uri: String): ScalaDslResponse = response.httpStatus(201).headers("Location" -> uri).build
 
-  def created(uri: String, body: String): ScalaDslResponse = response.httpStatus(201).body(body).headers(Map("Location" -> uri)).build
+  def created(uri: String, body: String): ScalaDslResponse = response.httpStatus(201).body(body).headers("Location" -> uri).build
 
   def notFound(body: String): ScalaDslResponse = response.httpStatus(404).body(body).build
 
