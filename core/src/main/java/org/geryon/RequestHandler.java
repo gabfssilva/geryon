@@ -2,6 +2,7 @@ package org.geryon;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 import java.util.regex.Matcher;
@@ -20,6 +21,7 @@ public class RequestHandler {
     private Function<Request, Boolean> matcher;
     private List<String> wantedPathParameters;
     private String pathAsPattern;
+    private Map<String, String> defaultHeaders;
 
     public RequestHandler(String produces, Function<Request, CompletableFuture<?>> func) {
         this.produces = produces;
@@ -27,7 +29,7 @@ public class RequestHandler {
         this.matcher = AlwaysAllowMatcher.MATCHER;
     }
 
-    public RequestHandler(String method, String path, String produces, Function<Request, CompletableFuture<?>> func, Function<Request, Boolean> matcher) {
+    public RequestHandler(String method, String path, String produces, Function<Request, CompletableFuture<?>> func, Function<Request, Boolean> matcher, Map<String, String> defaultHeaders) {
         this.method = method;
         this.path = path;
         this.produces = produces;
@@ -35,6 +37,7 @@ public class RequestHandler {
         this.matcher = matcher == null ? AlwaysAllowMatcher.MATCHER : matcher;
         this.wantedPathParameters = extractWantedPathParameters();
         this.pathAsPattern = extractPathAsPattern();
+        this.defaultHeaders = defaultHeaders;
     }
 
     public String method() {
@@ -63,6 +66,10 @@ public class RequestHandler {
 
     public String pathAsPattern() {
         return pathAsPattern;
+    }
+
+    public Map<String, String> defaultHeaders() {
+        return this.defaultHeaders;
     }
 
     private List<String> extractWantedPathParameters() {

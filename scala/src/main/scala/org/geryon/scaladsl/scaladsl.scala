@@ -1,11 +1,13 @@
 package org.geryon
 
+import scala.collection.JavaConverters._
 import java.util.concurrent.CompletableFuture
 import java.util.function
 
 import org.geryon.RequestHandlersHolder.addHandler
 import org.geryon.scaladsl.model.{ScalaDslRequest, ScalaDslResponse}
 
+import scala.collection.mutable
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Failure, Success}
 
@@ -106,7 +108,7 @@ package object scaladsl {
     val javaMatcher: function.Function[Request, java.lang.Boolean] =
       if (matcher == null) null else (t: Request) => matcher.apply(t)
 
-    addHandler(new RequestHandler(method, path, produces, javaFunc, javaMatcher))
+    addHandler(new RequestHandler(method, path, produces, javaFunc, javaMatcher, HttpServerHandler.defaultHeaders.asJava))
   }
 
   def response = new model.ScalaDslResponseBuilder
@@ -156,10 +158,16 @@ package object scaladsl {
     HttpServerHandler.defaultContentType = defaultContentType
   }
 
+  def defaultHeader(header: (String, String)): Unit = {
+    val (name, value) = header
+    HttpServerHandler.defaultHeaders(name) = value
+  }
+
   object HttpServerHandler {
     var defaultContentType = "text/plain"
     var port = 8080
     var eventLoopThreadNumber = 1
+    var defaultHeaders: mutable.Map[String, String] = mutable.Map[String, String]()
     var httpServer: HttpServer = _
   }
 

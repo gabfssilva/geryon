@@ -1,5 +1,7 @@
 package org.geryon;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.function.BiFunction;
@@ -13,6 +15,7 @@ public class Http {
     private static Integer port;
     private static Integer eventLoopThreadNumber;
     private static HttpServer httpServer;
+    private static Map<String, String> defaultHeaders = new HashMap<>();
 
     private Http() {
     }
@@ -94,7 +97,7 @@ public class Http {
 
     public static void handle(String path, String produces, String method, Function<Request, Boolean> matcher, Function<Request, CompletableFuture<?>> handler) {
         if (httpServer == null) init();
-        addHandler(new RequestHandler(method, path, produces, handler, matcher));
+        addHandler(new RequestHandler(method, path, produces, handler, matcher, Http.defaultHeaders));
     }
 
     public static Response ok(String body) {
@@ -180,6 +183,14 @@ public class Http {
 
     public static void defaultContentType(String defaultContentType) {
         Http.defaultContentType = defaultContentType;
+    }
+
+    public static void defaultHeader(String name, String value) {
+        defaultHeaders.put(name, value);
+    }
+
+    public static Map<String, String> defaultHeaders() {
+        return defaultHeaders;
     }
 
     public static String defaultContentType() {

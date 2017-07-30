@@ -11,6 +11,8 @@ import scala.concurrent.ExecutionContext.Implicits.global
 object Sample extends App {
   port(9999)
 
+  defaultHeader("X-Powered-By" -> "Geryon")
+
   handlerFor[RuntimeException] { (exception, request) =>
     internalServerError(s"ups, you called ${request.url} and it seems that an exception occurred: ${exception.getMessage}")
   }
