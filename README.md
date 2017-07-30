@@ -52,7 +52,7 @@ fun main(args: Array<String>) {
 #### More examples in:
 //TODO
 
-## Scala
+## The obligatory Hello World in Scala
 
 #### SBT
 
@@ -69,7 +69,7 @@ dependencies {
 }
 ```
 
-#### The obligatory Hello World in Scala
+#### The hello world http server
 
 ```scala
 import scala.concurrent.Future
