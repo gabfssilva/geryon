@@ -23,7 +23,21 @@ apply plugin: "maven-publish"
 apply plugin: 'net.researchgate.release'
 
 project(":examples") {
+    buildscript {
+        ext.kotlin_version = '1.1.3-2'
+
+        repositories {
+            maven { url 'http://jcenter.bintray.com' }
+        }
+
+        dependencies {
+            classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        }
+    }
+
     apply plugin: 'java-library'
+    apply plugin: 'kotlin'
+    apply plugin: 'scala'
 
     repositories {
         maven { url 'http://jcenter.bintray.com' }
@@ -33,6 +47,12 @@ project(":examples") {
 
     dependencies {
         compile project(":core")
+        compile project(":scala")
+
+        compile 'org.scala-lang:scala-library:2.12.2'
+
+        compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+        compile "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
 
         compile group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.25'
 

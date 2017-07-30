@@ -26,7 +26,7 @@ public class SimpleServer {
         // you can define some headers to be sent with any response
         defaultHeader("X-Powered-By", "geryon");
 
-        //you can also define exception handlers for exceptions occurred on the future exception
+        //you can also define exception handlers for exceptions occurred on the future completion
         handlerFor(Exception.class, (e, r) -> {
             String message = format(
                     "ups, you called %s and it seems that an exception occurred: %s", r.url(), e.getMessage()

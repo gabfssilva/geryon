@@ -21,7 +21,7 @@ object Sample extends App {
     Future { s"hello, ${request.queryParameters("name")}" }
   }
 
-  post("/hoho") { request =>
-    Future { "this is a post" }
+  post("/hoho") { r =>
+    Future { r.queryParameters("a") }
   }
 }
