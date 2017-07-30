@@ -23,6 +23,9 @@ public class SimpleServer {
         //you can define how many threads netty will use for its event loop
         eventLoopThreadNumber(1);
 
+        // you can define some headers to be sent with any response
+        defaultHeader("X-Powered-By", "geryon");
+
         //you can also define exception handlers for exceptions occurred on the future exception
         handlerFor(Exception.class, (e, r) -> {
             String message = format(

@@ -1,5 +1,6 @@
 package org.geryon;
 
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.function.BiFunction;
@@ -13,6 +14,7 @@ public class Http {
     private static Integer port;
     private static Integer eventLoopThreadNumber;
     private static HttpServer httpServer;
+    private static Maps.MapBuilder defaultHeadersBuilder = Maps.<String, String>newMap();
 
     private Http() {
     }
@@ -41,60 +43,60 @@ public class Http {
     }
 
     public static void get(String path, String produces, Function<Request, Boolean> matcher, Function<Request, CompletableFuture<?>> handler) {
-        handle(path, produces, "GET", matcher, handler);
+        handle(path, produces, "GET", matcher, handler, defaultHeadersBuilder.build());
     }
 
     public static void post(String path, String produces, Function<Request, Boolean> matcher, Function<Request, CompletableFuture<?>> handler) {
-        handle(path, produces, "POST", matcher, handler);
+        handle(path, produces, "POST", matcher, handler, defaultHeadersBuilder.build());
     }
 
     public static void post(String path, Function<Request, Boolean> matcher, Function<Request, CompletableFuture<?>> handler) {
-        handle(path, defaultContentType, "POST", matcher, handler);
+        handle(path, defaultContentType, "POST", matcher, handler, defaultHeadersBuilder.build());
     }
 
     public static void post(String path, Function<Request, CompletableFuture<?>> handler) {
-        handle(path, defaultContentType, "POST", null, handler);
+        handle(path, defaultContentType, "POST", null, handler, defaultHeadersBuilder.build());
     }
 
     public static void put(String path, String produces, Function<Request, Boolean> matcher, Function<Request, CompletableFuture<?>> handler) {
-        handle(path, produces, "PUT", matcher, handler);
+        handle(path, produces, "PUT", matcher, handler, defaultHeadersBuilder.build());
     }
 
     public static void put(String path, Function<Request, Boolean> matcher, Function<Request, CompletableFuture<?>> handler) {
-        handle(path, defaultContentType, "PUT", matcher, handler);
+        handle(path, defaultContentType, "PUT", matcher, handler, defaultHeadersBuilder.build());
     }
 
     public static void put(String path, Function<Request, CompletableFuture<?>> handler) {
-        handle(path, defaultContentType, "PUT", null, handler);
+        handle(path, defaultContentType, "PUT", null, handler, defaultHeadersBuilder.build());
     }
 
     public static void patch(String path, String produces, Function<Request, Boolean> matcher, Function<Request, CompletableFuture<?>> handler) {
-        handle(path, produces, "PATCH", matcher, handler);
+        handle(path, produces, "PATCH", matcher, handler, defaultHeadersBuilder.build());
     }
 
     public static void patch(String path, Function<Request, Boolean> matcher, Function<Request, CompletableFuture<?>> handler) {
-        handle(path, defaultContentType, "PATCH", matcher, handler);
+        handle(path, defaultContentType, "PATCH", matcher, handler, defaultHeadersBuilder.build());
     }
 
     public static void patch(String path, Function<Request, CompletableFuture<?>> handler) {
-        handle(path, defaultContentType, "PATCH", null, handler);
+        handle(path, defaultContentType, "PATCH", null, handler, defaultHeadersBuilder.build());
     }
 
     public static void delete(String path, String produces, Function<Request, Boolean> matcher, Function<Request, CompletableFuture<?>> handler) {
-        handle(path, produces, "DELETE", matcher, handler);
+        handle(path, produces, "DELETE", matcher, handler, defaultHeadersBuilder.build());
     }
 
     public static void delete(String path, Function<Request, Boolean> matcher, Function<Request, CompletableFuture<?>> handler) {
-        handle(path, defaultContentType, "DELETE", matcher, handler);
+        handle(path, defaultContentType, "DELETE", matcher, handler, defaultHeadersBuilder.build());
     }
 
     public static void delete(String path, Function<Request, CompletableFuture<?>> handler) {
-        handle(path, defaultContentType, "DELETE", null, handler);
+        handle(path, defaultContentType, "DELETE", null, handler, defaultHeadersBuilder.build());
     }
 
-    public static void handle(String path, String produces, String method, Function<Request, Boolean> matcher, Function<Request, CompletableFuture<?>> handler) {
+    public static void handle(String path, String produces, String method, Function<Request, Boolean> matcher, Function<Request, CompletableFuture<?>> handler, Map<String, String> defaultHeaders) {
         if (httpServer == null) init();
-        addHandler(new RequestHandler(method, path, produces, handler, matcher));
+        addHandler(new RequestHandler(method, path, produces, handler, matcher, defaultHeaders));
     }
 
     public static Response ok(String body) {
@@ -180,6 +182,14 @@ public class Http {
 
     public static void defaultContentType(String defaultContentType) {
         Http.defaultContentType = defaultContentType;
+    }
+
+    public static void defaultHeader(String name, String value) {
+        defaultHeadersBuilder.put(name, value);
+    }
+
+    public static Map<String, String> defaultHeaders() {
+        return defaultHeadersBuilder.build();
     }
 
     public static String defaultContentType() {

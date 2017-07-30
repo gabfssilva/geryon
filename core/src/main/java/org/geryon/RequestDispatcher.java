@@ -79,6 +79,10 @@ public class RequestDispatcher implements BiConsumer<FullHttpRequest, ChannelHan
                         .produces());
         response.headers().set(HttpHeaderNames.CONTENT_LENGTH, resp.getBody() == null ? 0 : resp.getBody().length());
 
+        if (handler.defaultHeaders() != null) {
+            handler.defaultHeaders().forEach((k, v) -> response.headers().set(k, v));
+        }
+
         if (resp.getHeaders() != null){
             resp.getHeaders().forEach((k, v) -> response.headers().set(k, v));
         }
