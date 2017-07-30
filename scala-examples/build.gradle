@@ -1,0 +1,24 @@
+apply plugin: 'java-library'
+apply plugin: 'scala'
+
+repositories {
+    mavenLocal()
+    jcenter()
+}
+
+//no idea why, needed to add it for gradle import geryon scala as a dependency
+sourceSets.main.scala.srcDir "../scala/src/main/scala"
+
+dependencies {
+    compile project(':scala')
+
+    compile 'org.scala-lang:scala-library:2.12.2'
+
+    compile group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.25'
+
+    compile 'com.mashape.unirest:unirest-java:1.4.9'
+    compile 'org.apache.httpcomponents:httpclient:4.3.6'
+    compile 'org.apache.httpcomponents:httpmime:4.3.6'
+    compile 'org.apache.httpcomponents:httpasyncclient:4.0.2'
+    compile 'org.json:json:20140107'
+}

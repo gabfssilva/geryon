@@ -1,5 +1,5 @@
 # geryon
-Geryon is a library that runs on top of Netty 4, helping you build reactive HTTP services in the JVM.
+A Sinatra inspired framework, Geryon is a library that runs on top of Netty 4, helping you build reactive HTTP services in the JVM.
 
 ## Using in your project
 
@@ -16,7 +16,7 @@ dependencies {
 }
 ```
 
-## A simple GET in Java.
+## The obligatory Hello World in Java
 
 
 ```java
@@ -25,81 +25,26 @@ import static org.geryon.Http.*;
 
 public class Main {
     public static void main(String[] args) {
-        port(9090);
-        defaultContentType("text/plain");
-        
-        handlerFor(Exception.class, (e, r) -> {
-            String message = format(
-                "ups, you called %s and it seems that an exception occurred: %s", r.url(), e.getMessage()
-            );
-        
-            return internalServerError(message);
-        });
-        
         get("/hello", r -> supply(() -> "Hello, " + r.queryParameters().get("name")));
     }
 }
 ```
 
+Your app will be running at 8080.
+
 #### More examples in:
 
 [Simple Server in Java](https://github.com/gabfssilva/geryon/tree/master/examples/src/main/java/org/geryon/examples/SimpleServer.java)
 
-## Examples in Kotlin
+## The obligatory Hello World in Kotlin
 
 ```kotlin
 //this import does all the trick
 import org.geryon.Http.*
 
 fun main(args: Array<String>) {
-    port(9090)
-    defaultContentType("text/plain")
-    
-    get("/test/:name") {
-        supply { "hello, ${it.pathParameters()["name"]}" }
-    }
-
-    put("/test/withQueryParameter") {
-        supply { "hello, ${it.queryParameters()["queryParameterName"]}" }
-    }
-
-    patch("/test/withBody") {
-        supply { accepted("hello, ${it.body()}") }
-    }
-
-    post("/test/customResponse") {
-        supply {
-            response()
-               .httpStatus(201)
-               .header("Location", "/test/${it.body()}")
-               .body("hello, ${it.body()}")
-               .build()
-            }
-    }
-}
-```
-
-Since Kotlin has functions, it is possible to build interceptors around your service in a very elegant way:
-
-```kotlin
-//this import does all the trick
-import org.geryon.Http.*
-
-fun main(args: Array<String>) {
-    port(9090)
-    defaultContentType("text/plain")
-    
-    fun timer(f: () -> CompletableFuture<out Any>): CompletableFuture<out Any> {
-        val init = System.currentTimeMillis()
-        return f().thenApply {
-             println("total request time in ms:" + (System.currentTimeMillis() - init))
-             it
-        }
-    }
-    
-    get("/hello") { timer {
-        supply { "Hello, ${it.queryParameters["name"]}" }
-      }
+    get("/hello") {
+        supply { "hello, ${it.queryParameters()["name"]}" }
     }
 }
 ```
@@ -108,7 +53,6 @@ fun main(args: Array<String>) {
 //TODO
 
 ## Scala
-
 
 #### SBT
 
@@ -125,7 +69,7 @@ dependencies {
 }
 ```
 
-#### Sample http server
+#### The obligatory Hello World in Scala
 
 ```scala
 import scala.concurrent.Future
@@ -135,12 +79,6 @@ object Sample extends App {
   //this import does all the trick
   import org.geryon.scaladsl._
 
-  port(9999)
-  
-  handlerFor[RuntimeException] { (exception, request) =>
-    internalServerError(s"ups, you called ${request.url} and it seems that an exception occurred: ${exception.getMessage}")
-  }
-
   get("/hello") { request =>
     Future {
       s"hello, ${request.queryParameters("name")}"
@@ -148,4 +86,8 @@ object Sample extends App {
   }
 }
 ```
+
+#### More examples in:
+[Simple Server in Scala](https://github.com/gabfssilva/geryon/tree/master/scala-examples/src/main/scala/org/geryon/examples/scaladsl/SimpleServer.scala)
+
 

@@ -1,0 +1,17 @@
+apply plugin: 'java-library'
+
+repositories {
+    maven { url 'http://jcenter.bintray.com' }
+}
+
+dependencies {
+    compile project(":core")
+
+    compile group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.25'
+
+    compile 'com.mashape.unirest:unirest-java:1.4.9'
+    compile 'org.apache.httpcomponents:httpclient:4.3.6'
+    compile 'org.apache.httpcomponents:httpmime:4.3.6'
+    compile 'org.apache.httpcomponents:httpasyncclient:4.0.2'
+    compile 'org.json:json:20140107'
+}

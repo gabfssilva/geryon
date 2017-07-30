@@ -1,4 +1,4 @@
-package org.geryon.scaladsl.examples
+package org.geryon.examples.scaladsl
 
 import java.util.UUID
 import java.util.concurrent.Executors
@@ -9,10 +9,8 @@ import scala.concurrent.{ExecutionContext, Future}
   * @author Gabriel Francisco <gabfssilva@gmail.com>
   */
 object SimpleServer extends App {
-
-  import org.geryon.scaladsl._
-
   import scala.concurrent.ExecutionContext.Implicits.global
+  import org.geryon.scaladsl._
 
   //defining the expose http port
   //default is 8080
