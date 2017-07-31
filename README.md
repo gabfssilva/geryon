@@ -25,7 +25,7 @@ import static org.geryon.Http.*;
 
 public class Main {
     public static void main(String[] args) {
-        get("/hello", r -> supply(() -> "Hello, " + r.queryParameters().get("name")));
+        get("/hello", request -> supply(() -> "Hello, " + request.queryParameters().get("name")));
     }
 }
 ```
@@ -43,9 +43,7 @@ Your app will be running at 8080.
 import org.geryon.Http.*
 
 fun main(args: Array<String>) {
-    get("/hello") {
-        supply { "hello, ${it.queryParameters()["name"]}" }
-    }
+    get("/hello") { supply { "hello, ${it.queryParameters()["name"]}" } }
 }
 ```
 
@@ -79,11 +77,7 @@ object Sample extends App {
   //this import does all the trick
   import org.geryon.scaladsl._
 
-  get("/hello") { request =>
-    Future {
-      s"hello, ${request.queryParameters("name")}"
-    }
-  }
+  get("/hello") { request => Future { s"hello, ${request.queryParameters("name")}" } }
 }
 ```
 
