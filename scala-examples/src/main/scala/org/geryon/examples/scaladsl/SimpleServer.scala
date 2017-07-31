@@ -26,8 +26,8 @@ object SimpleServer extends App {
   defaultHeader("X-Powered-By" -> "Geryon")
 
   //you can also define exception handlers for exceptions occurred on the future completion
-  handlerFor[RuntimeException] { (exception, request) =>
-    internalServerError(s"ups, you called ${request.url} and it seems that an exception occurred: ${exception.getMessage}")
+  handlerFor[RuntimeException] { implicit request => exception =>
+    internalServerError(s"ups, you called $url and it seems that an exception occurred: ${exception.getMessage}")
   }
 
   get("/hello") { implicit request =>

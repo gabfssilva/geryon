@@ -2,6 +2,7 @@ package org.geryon.scaladsl
 
 import org.geryon.Request
 
+import scala.annotation.implicitNotFound
 import scala.collection.JavaConverters._
 
 /**
@@ -9,11 +10,17 @@ import scala.collection.JavaConverters._
   */
 trait RequestParameters {
   def body(implicit request: ScalaDslRequest): Option[String] = request.body
+
   def url(implicit request: ScalaDslRequest): String = request.url
+
   def contentType(implicit request: ScalaDslRequest): Option[String] = request.contentType
+
   def method(implicit request: ScalaDslRequest): String = request.method
+
   def headers(implicit request: ScalaDslRequest): Map[String, String] = request.headers
+
   def queryParameters(implicit request: ScalaDslRequest): Map[String, String] = request.queryParameters
+
   def pathParameters(implicit request: ScalaDslRequest): Map[String, String] = request.pathParameters
 
   def header(header: String)(implicit request: ScalaDslRequest): String = {
@@ -54,6 +61,23 @@ object ScalaDslRequest {
     )
 }
 
+@implicitNotFound(
+  """
+    Cannot find an implicit ScalaDslRequest. Maybe you forgot to define your request parameter as implicit.
+    If you are using it inside a http method handler, you must do:
+
+    method("path") { implicit request =>
+       ...
+    }
+
+    Or, inside a handler:
+
+    handlerFor[RuntimeException] { (exception, request) =>
+       implicit val r = request
+       ...
+    }
+  """
+)
 case class ScalaDslRequest(url: String,
                            body: Option[String],
                            contentType: Option[String],

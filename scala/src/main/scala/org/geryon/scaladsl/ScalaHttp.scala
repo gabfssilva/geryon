@@ -35,9 +35,9 @@ trait ScalaHttp extends RequestParameters{
     }
   }
 
-  def handlerFor[T <: Throwable](handler: (T, ScalaDslRequest) => ScalaDslResponse)(implicit m: Manifest[T]): Unit = {
+  def handlerFor[T <: Throwable](handler: ScalaDslRequest => T => ScalaDslResponse)(implicit m: Manifest[T]): Unit = {
     val clazz: Class[T] = m.runtimeClass.asInstanceOf[Class[T]]
-    ExceptionHandlers.addHandler(clazz, (t: T, r: Request) => handler(t, r))
+    ExceptionHandlers.addHandler(clazz, (t: T, r: Request) => handler(r)(t))
   }
 
   def get(path: String)(handler: ScalaDslRequest => Future[_]): Unit = {
