@@ -1,0 +1,89 @@
+buildscript {
+    repositories {
+        maven { url 'http://jcenter.bintray.com' }
+        maven {
+            url 'https://plugins.gradle.org/m2/'
+        }
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath "gradle.plugin.com.github.maiflai:gradle-scalatest:0.16"
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.3'
+        classpath 'net.researchgate:gradle-release:2.4.0'
+    }
+}
+
+apply plugin: 'scala'
+apply plugin: 'java-library'
+apply plugin: 'com.jfrog.bintray'
+apply plugin: "maven-publish"
+apply plugin: 'net.researchgate.release'
+apply plugin: "com.github.maiflai.scalatest"
+
+def projectName = 'geryon-scala'
+
+task fatJar(type: Jar) {
+    archiveName = projectName + '-all.jar'
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+}
+
+bintray {
+    user = System.getProperty('bintrayUser')
+    key = System.getProperty('bintrayKey')
+
+    pkg {
+        repo = 'releases'
+        name = 'geryon-scala'
+        userOrg = 'geryon'
+        licenses = ['MIT']
+
+        version {
+            name = project.version
+            desc = 'Geryon Scala ' + project.version
+            released = new Date()
+            vcsTag = project.version
+        }
+
+        publications = ['java']
+    }
+}
+
+publishing {
+    publications {
+        java(MavenPublication) {
+            artifact fatJar
+            groupId 'org.geryon'
+            artifactId 'geryon'
+            version project.version
+        }
+    }
+}
+
+repositories {
+    maven { url 'http://jcenter.bintray.com' }
+    maven { url 'http://timboudreau.com/builds/plugin/repository/everything/' }
+    mavenCentral()
+}
+
+afterReleaseBuild.dependsOn bintrayUpload
+
+dependencies {
+    compile project(":core")
+
+    compile 'org.scala-lang:scala-library:2.12.2'
+
+    testRuntime 'org.pegdown:pegdown:1.4.2'
+
+    testCompile group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.25'
+
+    //unirest libs
+    testCompile 'com.mashape.unirest:unirest-java:1.4.9'
+    testCompile 'org.apache.httpcomponents:httpclient:4.3.6'
+    testCompile 'org.apache.httpcomponents:httpmime:4.3.6'
+    testCompile 'org.apache.httpcomponents:httpasyncclient:4.0.2'
+    testCompile 'org.json:json:20140107'
+
+    testCompile 'org.scalatest:scalatest_2.12:3.0.1'
+}
