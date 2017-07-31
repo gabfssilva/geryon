@@ -8,7 +8,7 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import static org.geryon.RequestHandlersHolder.addHandler;
+import static org.geryon.RequestHandlers.addHandler;
 
 public class Http {
     private static String defaultContentType = "text/plain";

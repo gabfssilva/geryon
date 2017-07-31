@@ -24,7 +24,7 @@ import static io.netty.buffer.Unpooled.copiedBuffer;
  */
 public class RequestDispatcher implements BiConsumer<FullHttpRequest, ChannelHandlerContext> {
     public static final Pattern PATTERN_PATH_PARAM = Pattern.compile("^?(:(.)+/|:(.)+)");
-    private final List<RequestHandler> requestHandlers = RequestHandlersHolder.requestHandlers();
+    private final List<RequestHandler> requestHandlers = RequestHandlers.requestHandlers();
 
     @Override
     public void accept(FullHttpRequest httpRequest, ChannelHandlerContext ctx) {

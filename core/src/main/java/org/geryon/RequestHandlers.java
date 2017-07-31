@@ -11,12 +11,12 @@ import java.util.Objects;
 /**
  * @author Gabriel Francisco <gabfssilva@gmail.com>
  */
-public class RequestHandlersHolder {
+public class RequestHandlers {
     private static final Logger logger = LoggerFactory.getLogger(HttpServer.class);
 
     private static List<RequestHandler> requestHandlers = new ArrayList<>();
 
-    private RequestHandlersHolder() {
+    private RequestHandlers() {
     }
 
     public static List<RequestHandler> requestHandlers() {

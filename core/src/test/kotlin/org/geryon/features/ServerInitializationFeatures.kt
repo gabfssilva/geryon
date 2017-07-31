@@ -5,13 +5,13 @@ import io.kotlintest.matchers.shouldBe
 import io.kotlintest.matchers.shouldThrow
 import io.kotlintest.specs.FeatureSpec
 import org.geryon.Http.*
-import org.geryon.RequestHandlersHolder
+import org.geryon.RequestHandlers
 import org.geryon.exceptions.AmbiguousRoutingException
 
 class ServerInitializationFeatures : FeatureSpec({
     feature("server initialization") {
         scenario("ambiguous handlers") {
-            RequestHandlersHolder.requestHandlers().clear()
+            RequestHandlers.requestHandlers().clear()
 
             port(8888)
             defaultContentType("text/plain")
@@ -29,11 +29,11 @@ class ServerInitializationFeatures : FeatureSpec({
 
             exception.message shouldBe "There is more than one handler mapped for path /test(/.+)"
 
-            RequestHandlersHolder.requestHandlers().clear()
+            RequestHandlers.requestHandlers().clear()
         }
 
         scenario("ambiguous handlers with matchers") {
-            RequestHandlersHolder.requestHandlers().clear()
+            RequestHandlers.requestHandlers().clear()
 
             port(8888)
             defaultContentType("text/plain")
@@ -53,7 +53,7 @@ class ServerInitializationFeatures : FeatureSpec({
             versionOneResult shouldBe "hello, gabriel, version 1"
             versionTwoResult shouldBe "hello, gabriel, version 2"
 
-            RequestHandlersHolder.requestHandlers().clear()
+            RequestHandlers.requestHandlers().clear()
         }
     }
 })

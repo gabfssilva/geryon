@@ -29,4 +29,8 @@ public class ExceptionHandlers {
 
         return (BiFunction<T, Request, Response>) defaultHandler;
     }
+
+    public static List<ExceptionHandler<? extends Throwable>> handlers() {
+        return exceptionHandlers;
+    }
 }
