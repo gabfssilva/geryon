@@ -4,8 +4,6 @@ import java.util.UUID
 
 import com.mashape.unirest.http.Unirest
 
-import scala.concurrent.Future
-
 /**
   * @author Gabriel Francisco <gabfssilva@gmail.com>
   */
@@ -13,7 +11,7 @@ class GetFeature extends BaseGeryonFeature {
   feature("GET feature") {
     scenario("basic") {
       get("/hello") { request =>
-        Future {
+        supply {
           "hello, world!"
         }
       }
@@ -28,7 +26,7 @@ class GetFeature extends BaseGeryonFeature {
 
     scenario("with path parameter") {
       get("/hello/:name") { request =>
-        Future {
+        supply {
           s"hello, ${request.pathParameters("name")}"
         }
       }
@@ -43,7 +41,7 @@ class GetFeature extends BaseGeryonFeature {
 
     scenario("with query parameter") {
       get("/hello") { request =>
-        Future {
+        supply {
           s"hello, ${request.queryParameters("name")}"
         }
       }
@@ -58,7 +56,7 @@ class GetFeature extends BaseGeryonFeature {
 
     scenario("with header") {
       get("/hello") { request =>
-        Future {
+        supply {
           s"hello, world, version ${request.headers("X-Version")}"
         }
       }
@@ -77,7 +75,7 @@ class GetFeature extends BaseGeryonFeature {
 
     scenario("with matcher") {
       get("/hello", _.headers("X-Version").equals("1")) { request =>
-        Future {
+        supply {
           s"hello, world, version ${request.headers("X-Version")}"
         }
       }
@@ -110,7 +108,7 @@ class GetFeature extends BaseGeryonFeature {
 
       defaultHeader(headerKey -> headerValue)
 
-      get("/hello") { _ => Future { "hello, world!" } }
+      get("/hello") { _ => supply { "hello, world!" } }
 
       val eventualResponse = Unirest.get(s"http://localhost:$port/hello").asFuture
 

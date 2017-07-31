@@ -70,14 +70,11 @@ dependencies {
 #### The hello world http server
 
 ```scala
-import scala.concurrent.Future
-import scala.concurrent.ExecutionContext.Implicits.global
-
+//this import does all the trick
+import org.geryon.scaladsl._
+  
 object Sample extends App {
-  //this import does all the trick
-  import org.geryon.scaladsl._
-
-  get("/hello") { request => Future { s"hello, ${request.queryParameters("name")}" } }
+  get("/hello") { request => supply { s"hello, ${request.queryParameters("name")}" } }
 }
 ```
 
