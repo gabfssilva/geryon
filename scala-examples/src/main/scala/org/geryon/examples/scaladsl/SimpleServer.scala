@@ -30,15 +30,16 @@ object SimpleServer extends App {
     internalServerError(s"ups, you called ${request.url} and it seems that an exception occurred: ${exception.getMessage}")
   }
 
-  get("/hello") { request =>
+  get("/hello") { implicit request =>
     // since you cannot block your handler,
     // you need to return a Future with a response, instead of only a response"
-
     //the method supply method is just a future with a default ExecutionContext
+
+    //this way we are getting a query parameter
     supply {
       s"""
       {
-          "name": ${request.queryParameters("name")}"
+          "name": "${param("name")}"
       }
       """
     }
@@ -48,19 +49,19 @@ object SimpleServer extends App {
   //a matcher is a function<request, boolean> which returns if the request
   //matched the route, so, you can have the same method and path mapped
   //to different routes, since you also implemented different matchers.
-  get("/hello/withMatcher", r => "1".equals(r.headers("Version"))) { request =>
+  get("/hello/withMatcher", implicit r => "1".equals(header("Version"))) { implicit request =>
     supply {
       s"""
       {
-          "name": "${request.queryParameters("name")}
+          "name": "${param("name")}"
       }
       """
     }
   }
 
-  get("/hello/:name") { request =>
+  get("/hello/:name") { implicit request =>
     //getting the path parameter
-    val name = request.pathParameters("name")
+    val name = pathParam("name")
 
     supply {
       s"""
@@ -71,22 +72,22 @@ object SimpleServer extends App {
     }
   }
 
-  post("/hello") { request =>
+  post("/hello") { implicit request =>
     //getting a body
     //since a body is not obligatory, it is inside of an Option[String]
-    val jsonBody = request.body.orNull
+    val jsonBody = body.orNull
 
     supply {
       created(s"/hello/${UUID.randomUUID().toString}", jsonBody)
     }
   }
 
-  put("/hello") { request =>
+  put("/hello") { implicit request =>
     //implicitly using a specific ExecutionContext for not blocking the global executor
     //this one uses a single thread
     implicit val ec = ExecutionContext.fromExecutor(Executors.newSingleThreadExecutor())
 
-    val jsonBody = request.body.orNull
+    val jsonBody = body.orNull
 
     supply {
       accepted(jsonBody)

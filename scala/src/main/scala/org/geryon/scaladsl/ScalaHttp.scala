@@ -15,7 +15,7 @@ import scala.util.{Failure, Success}
 /**
   * @author Gabriel Francisco <gabfssilva@gmail.com>
   */
-trait ScalaHttp {
+trait ScalaHttp extends RequestParameters{
   private val singleThreadExecutor = ExecutionContext.fromExecutor(Executors.newSingleThreadExecutor())
 
   protected[geryon] def init(): Unit = {

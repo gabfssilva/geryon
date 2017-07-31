@@ -74,7 +74,7 @@ dependencies {
 import org.geryon.scaladsl._
   
 object Sample extends App {
-  get("/hello") { request => supply { s"hello, ${request.queryParameters("name")}" } }
+  get("/hello") { implicit request => supply { s"hello, ${param("name")}}" } }
 }
 ```
 
