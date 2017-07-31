@@ -23,7 +23,7 @@ dependencies {
 //this import does all the trick
 import static org.geryon.Http.*;
 
-public class Main {
+public class Sample {
     public static void main(String[] args) {
         get("/hello", request -> supply(() -> "Hello, " + request.queryParameters().get("name")));
     }
