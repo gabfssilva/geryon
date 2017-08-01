@@ -36,6 +36,7 @@ object SimpleServer extends App {
     //the method supply method is just a future with a default ExecutionContext
 
     //this way we are getting a query parameter
+
     supply {
       s"""
       {
@@ -67,6 +68,23 @@ object SimpleServer extends App {
       s"""
       {
           "name": $name
+      }
+      """
+    }
+  }
+
+  //this example is using matrix parameters
+  //matrix parameters are evaluated lazily, since getting them is more costly than other parameters
+  get("/hello/matrix") { implicit request =>
+    //so, if the client sends a GET: http://host:port/hello;name=gabriel;age=24/matrix
+    //we are extracting over here name and size parameters from "hello" path.
+    val (name, age) = matrixParameter("hello" -> ("name", "age"))
+
+    supply {
+      s"""
+      {
+          "name": "$name",
+          "age": $age
       }
       """
     }

@@ -15,7 +15,7 @@ import scala.util.{Failure, Success}
 /**
   * @author Gabriel Francisco <gabfssilva@gmail.com>
   */
-trait ScalaHttp extends RequestParameters{
+trait ScalaHttp extends RequestParameters {
   private val singleThreadExecutor = ExecutionContext.fromExecutor(Executors.newSingleThreadExecutor())
 
   protected[geryon] def init(): Unit = {
@@ -106,13 +106,17 @@ trait ScalaHttp extends RequestParameters{
     val javaFunc: JavaFunction[Request, CompletableFuture[_ <: Any]] = (t: Request) => {
       val promise = new CompletableFuture[Any]()
 
-      handler
-        .apply(t)
-        .onComplete {
-          case Success(response: ScalaDslResponse) => promise.complete(response.asJavaResponse)
-          case Success(anyResponse) => promise.complete(anyResponse)
-          case Failure(e) => promise.completeExceptionally(e)
-        }
+      try {
+        handler
+          .apply(t)
+          .onComplete {
+            case Success(response: ScalaDslResponse) => promise.complete(response.asJavaResponse)
+            case Success(anyResponse) => promise.complete(anyResponse)
+            case Failure(e) => promise.completeExceptionally(e)
+          }
+      } catch {
+        case t: Throwable => promise.completeExceptionally(t)
+      }
 
       promise
     }

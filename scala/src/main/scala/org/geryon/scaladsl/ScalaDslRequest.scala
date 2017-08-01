@@ -8,7 +8,7 @@ import scala.collection.JavaConverters._
 /**
   * @author Gabriel Francisco <gabfssilva@gmail.com>
   */
-trait RequestParameters {
+trait RequestParameters extends MatrixParameterSupport {
   def body(implicit request: ScalaDslRequest): Option[String] = request.body
 
   def url(implicit request: ScalaDslRequest): String = request.url
@@ -85,6 +85,16 @@ case class ScalaDslRequest(url: String,
                            headers: Map[String, String],
                            queryParameters: Map[String, String],
                            pathParameters: Map[String, String],
-                           original: Request)
+                           original: Request) {
+  lazy val matrixParameters: Map[String, Map[String, String]] =
+    original
+      .matrixParameters()
+      .asScala
+      .map { entry =>
+        val (key, value) = entry
+        key -> value.asScala.toMap
+      }
+      .toMap
+}
 
 

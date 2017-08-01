@@ -23,7 +23,6 @@ import static io.netty.buffer.Unpooled.copiedBuffer;
  * @author Gabriel Francisco <gabfssilva@gmail.com>
  */
 public class RequestDispatcher implements BiConsumer<FullHttpRequest, ChannelHandlerContext> {
-    public static final Pattern PATTERN_PATH_PARAM = Pattern.compile("^?(:(.)+/|:(.)+)");
     private final List<RequestHandler> requestHandlers = RequestHandlers.requestHandlers();
 
     @Override
@@ -107,15 +106,34 @@ public class RequestDispatcher implements BiConsumer<FullHttpRequest, ChannelHan
         headers.forEach((k, v) -> response.headers().set(k, v));
     }
 
+    class UrlMatrixParameterLazyEval {
+        private String rawPath;
+        private String uri;
+
+        public UrlMatrixParameterLazyEval(String uri) {
+            this.uri = uri;
+        }
+
+        public String rawPath() {
+            if (rawPath == null) {
+                rawPath = uri.replaceAll(";(.)+/", "/").replaceAll(";(.)+", "");
+            }
+
+            return rawPath;
+        }
+    }
+
     public RequestExecution getHandler(FullHttpRequest httpRequest) {
         final String uri = httpRequest.uri().split("\\?")[0];
         final String method = httpRequest.method().name();
 
         List<RequestExecution> candidates = null;
 
+        final UrlMatrixParameterLazyEval matrixParameterLazyEval = new UrlMatrixParameterLazyEval(uri);
+
         for (RequestHandler handler : requestHandlers) {
-            if (handler.path().equals(uri)) {
-                final Request request = getRequest(httpRequest, uri, getHeaders(httpRequest), null);
+            if (handler.path().equals(uri) || handler.path().equals(matrixParameterLazyEval.rawPath())) {
+                final Request request = getRequest(httpRequest, uri, matrixParameterLazyEval.rawPath(), getHeaders(httpRequest), null);
 
                 if (!handler.matcher().apply(request)) {
                     continue;
@@ -148,7 +166,7 @@ public class RequestDispatcher implements BiConsumer<FullHttpRequest, ChannelHan
                 mapBuilder.put(wantedFields.get(i - 1), m.group(i).replace("/", ""));
             }
 
-            final Request request = getRequest(httpRequest, uri, getHeaders(httpRequest), mapBuilder.build());
+            final Request request = getRequest(httpRequest, uri, matrixParameterLazyEval.rawPath(), getHeaders(httpRequest), mapBuilder.build());
 
             if (!handler.matcher().apply(request)) {
                 continue;
@@ -173,7 +191,7 @@ public class RequestDispatcher implements BiConsumer<FullHttpRequest, ChannelHan
                 continue;
             }
 
-            if (sameMethod && handler.path().equals(uri)) {
+            if (sameMethod && (handler.path().equals(uri) || handler.path().equals(matrixParameterLazyEval.rawPath()))) {
                 mainCandidate = candidate;
                 continue;
             }
@@ -198,9 +216,10 @@ public class RequestDispatcher implements BiConsumer<FullHttpRequest, ChannelHan
                                                                                                              .build()));
     }
 
-    private Request getRequest(FullHttpRequest httpRequest, String uri, Map<String, String> headers, Map<String, String> pathParameters) {
+    private Request getRequest(FullHttpRequest httpRequest, String uri, String rawPath, Map<String, String> headers, Map<String, String> pathParameters) {
         return new Request.Builder().body(httpRequest.content().toString(Charset.forName("UTF-8")))
                                     .contentType(headers.get("Content-Type"))
+                                    .rawPath(rawPath)
                                     .headers(headers)
                                     .method(httpRequest.method().name())
                                     .pathParameters(pathParameters)

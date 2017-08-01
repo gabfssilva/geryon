@@ -61,6 +61,17 @@ public class SimpleServer {
             return supply(() -> ok("{\"name\": \"" + name + "\"}"));
         });
 
+        //this example is using matrix parameters
+        //matrix parameters are evaluated lazily, since getting them is more costly than other parameters
+        get("/hello/matrix", r -> {
+            //so, if the client sends a GET: http://host:port/hello;name=gabriel;age=24/matrix
+            //we are extracting over here name and age parameters from "hello" path.
+            final String name = r.matrixParameters().get("hello").get("name");
+            final String age = r.matrixParameters().get("hello").get("age");
+
+            return supply(() -> ok("{\"name\": \"" + name + "\", \"age\":" + age + "}"));
+        });
+
         post("/hello", r -> {
             final String jsonBody = r.body();
             // since you cannot block your handler,
