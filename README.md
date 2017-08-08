@@ -1,5 +1,5 @@
 # geryon
-A Sinatra inspired framework, Geryon is a library that runs on top of Netty 4, helping you build reactive HTTP services in the JVM.
+Inspired by Sinatra, Geryon is a library that runs on top of Netty 4, helping you build reactive HTTP services in the JVM.
 
 ## Using in your project
 
