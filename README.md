@@ -54,6 +54,8 @@ fun main(args: Array<String>) {
 }
 ```
 
+Your app will be running at 8080.
+
 #### More examples in Kotlin:
 [Simple Server in Kotlin](https://github.com/gabfssilva/geryon/tree/master/kotlin-examples/src/main/kotlin/org/geryon/examples/kotlin/SimpleServer.kt)
 
@@ -67,6 +69,8 @@ object Sample extends App {
   get("/hello") { implicit request => supply { s"hello, ${param("name")}}" } }
 }
 ```
+
+Your app will be running at 8080.
 
 #### More examples in:
 [Simple Server in Scala](https://github.com/gabfssilva/geryon/tree/master/scala-examples/src/main/scala/org/geryon/examples/scaladsl/SimpleServer.scala)
