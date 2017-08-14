@@ -75,4 +75,37 @@ Your app will be running at 8080.
 #### More examples in:
 [Simple Server in Scala](https://github.com/gabfssilva/geryon/tree/master/scala-examples/src/main/scala/org/geryon/examples/scaladsl/SimpleServer.scala)
 
+## Changing the http port
+
+#### Java, Kotlin or Scala
+```java
+port(9090);
+```
+
+## Using a default content type
+
+#### Java, Kotlin or Scala
+```java
+defaultContentType("application/json");
+```
+
+## Changing the event loop thread number
+
+#### Java, Kotlin or Scala
+```java
+eventLoopThreadNumber(2);
+```
+
+## Adding a default response header
+
+#### Java or Kotlin
+```java
+defaultHeader("X-Powered-By", "geryon");
+```
+
+#### Scala
+```java
+defaultHeader("X-Powered-By" -> "geryon")
+```
+
 
