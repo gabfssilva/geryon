@@ -16,6 +16,13 @@ dependencies {
 }
 ```
 
+#### If you are using Scala and SBT
+
+```scala
+ libraryDependencies +=
+  "org.geryon" %% "geryon-scala" % "0.0.4"
+```
+
 ## The obligatory Hello World in Java
 
 
@@ -51,23 +58,6 @@ fun main(args: Array<String>) {
 [Simple Server in Kotlin](https://github.com/gabfssilva/geryon/tree/master/kotlin-examples/src/main/kotlin/org/geryon/examples/kotlin/SimpleServer.kt)
 
 ## The obligatory Hello World in Scala
-
-#### SBT
-
-```scala
- libraryDependencies +=
-  "org.geryon" %% "geryon-scala" % "0.0.4"
-```
-
-#### Gradle
-
-```groovy
-dependencies {
-    compile "org.geryon:geryon-scala_2.12:0.0.4"
-}
-```
-
-#### The hello world http server
 
 ```scala
 //this import does all the trick
