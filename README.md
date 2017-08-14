@@ -104,8 +104,21 @@ defaultHeader("X-Powered-By", "geryon");
 ```
 
 #### Scala
-```java
+```scala
 defaultHeader("X-Powered-By" -> "geryon")
 ```
 
+## Adding an exception handler
 
+#### Java
+handlerFor(Exception.class, (e, r) -> internalServerError(String.format("ups, you called %s and it seems that an exception occurred: %s", r.url(), e.getMessage())));
+
+#### Kotlin
+handlerFor(Exception::class.java) { exception, request ->
+  internalServerError("ups, you called ${request.url()} and it seems that an exception occurred: ${exception.message}")
+}
+
+#### Scala
+handlerFor[RuntimeException] { implicit request => exception =>
+  internalServerError(s"ups, you called $url and it seems that an exception occurred: ${exception.getMessage}")
+}
