@@ -6,7 +6,7 @@ import com.mashape.unirest.http.exceptions.UnirestException
 import com.mashape.unirest.request.HttpRequest
 import org.geryon.scaladsl._
 import org.geryon.{ExceptionHandlers, RequestHandlers}
-import org.scalatest.{AsyncFeatureSpec, BeforeAndAfter, FeatureSpec, Matchers}
+import org.scalatest._
 
 import scala.concurrent.{Future, Promise}
 
@@ -17,17 +17,23 @@ class BaseGeryonFeature
   extends AsyncFeatureSpec
     with Matchers
     with BeforeAndAfter
+    with BeforeAndAfterAll
     with ScalaHttp {
 
   val port = 16978
 
-  before {
+  override def beforeAll(): Unit = {
     port(port)
+    init()
   }
 
   after {
     RequestHandlers.requestHandlers().clear()
     ExceptionHandlers.handlers().clear()
+  }
+
+  override protected def afterAll(): Unit = {
+    stop()
   }
 
   implicit class HttpRequestImplicit(val httpRequest: HttpRequest) {
