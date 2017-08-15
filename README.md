@@ -80,15 +80,7 @@ Your app will be running at 8080.
 For now, these are all the http methods available:
 
 ```
-get
-post
-put
-delete
-patch
-options
-head
-trace
-connect
+get, post, put, delete, patch, options, head, trace and connect
 ```
 
 ## Basic usage of a handler
