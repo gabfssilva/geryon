@@ -237,6 +237,39 @@ httpMethod("/path") { implicit request =>
 }
 ```
 
+### Working with headers
+
+#### Java
+
+```java
+httpMethod("/path", request -> {
+   final String myParameter = request.headers().get("myParameter");
+   //do whatever you want to do over here
+   return futureResponse;
+})
+```
+
+#### Kotlin
+
+```kotlin
+httpMethod("/path") { //in Kotlin, you can also omit the parameter if a function has only one parameter
+   //you can use the parameter using the keyword "it"
+   val myParameter = it.headers()["myParameter"]
+   //do whatever you want to do over here
+   futureResponse
+}
+```
+
+#### Scala
+
+```scala
+httpMethod("/path") { implicit request =>
+   val myParameter = header("myParameter")
+   //do whatever you want to do over here
+   futureResponse
+}
+```
+
 ## Understand the models (Request and Response)
 
 ### Request
@@ -255,8 +288,16 @@ pathParameters: Map[String, String]
 matrixParameters: Map[String, Map[String, String]]
 ```
 
-### ScalaDslRequest and the inherinted request methods
+### ScalaDslRequest and the inherited request methods
 
+In Scala, you can use a series of methods which takes an implicit request to avoid boilerplate code:
+
+```scala
+val pathParam = pathParam("pathParam")
+val queryParam = queryParam("queryParam")
+val header = header("header")
+val (matrixParam1, matrixParam2) = matrixParameter("path" -> ("matrixParam1", "matrixParam2"))
+```
 
 ## Changing the http port
 
