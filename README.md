@@ -69,9 +69,7 @@ Your app will be running at 8080.
 #### More examples in:
 
 [Simple Server in Java](https://github.com/gabfssilva/geryon/tree/master/examples/src/main/java/org/geryon/examples/SimpleServer.java)
-
 [Simple Server in Kotlin](https://github.com/gabfssilva/geryon/tree/master/kotlin-examples/src/main/kotlin/org/geryon/examples/kotlin/SimpleServer.kt)
-
 [Simple Server in Scala](https://github.com/gabfssilva/geryon/tree/master/scala-examples/src/main/scala/org/geryon/examples/scaladsl/SimpleServer.scala)
 
 
@@ -80,7 +78,15 @@ Your app will be running at 8080.
 For now, these are all the http methods available:
 
 ```
-get, post, put, delete, patch, options, head, trace and connect
+get
+post
+put
+delete
+patch
+options
+head
+trace
+connect
 ```
 
 ## Basic usage of a handler
