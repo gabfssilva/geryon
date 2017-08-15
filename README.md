@@ -31,7 +31,7 @@ For now on, every single available feature of Geryon will be showed over here. S
 
 ## The obligatory Hello World
 
-### in Java
+#### Java
 
 ```java
 //this import does all the trick
@@ -44,7 +44,7 @@ public class Sample {
 }
 ```
 
-### in Kotlin
+#### Kotlin
 
 ```kotlin
 //this import does all the trick
@@ -55,7 +55,7 @@ fun main(args: Array<String>) {
 }
 ```
 
-### in Scala
+#### Scala
 
 ```scala
 //this import does all the trick
