@@ -270,6 +270,39 @@ httpMethod("/path") { implicit request =>
 }
 ```
 
+### Working with the request body
+
+#### Java
+
+```java
+httpMethod("/path", request -> {
+   final String body = request.body();
+   //do whatever you want to do over here
+   return futureResponse;
+})
+```
+
+#### Kotlin
+
+```kotlin
+httpMethod("/path") { //in Kotlin, you can also omit the parameter if a function has only one parameter
+   //you can use the parameter using the keyword "it"
+   val body = it.body()
+   //do whatever you want to do over here
+   futureResponse
+}
+```
+
+#### Scala
+
+```scala
+httpMethod("/path") { implicit request =>
+   val requestBody = body
+   //do whatever you want to do over here
+   futureResponse
+}
+```
+
 ## Understand the models (Request and Response)
 
 ### Request
@@ -298,6 +331,9 @@ val queryParam = queryParam("queryParam")
 val pathOrQueryParam = param("param") //this method tries to get the path parameter with the informed key, if there is none, tries to get a query parameter
 val header = header("header")
 val (matrixParam1, matrixParam2) = matrixParameter("path" -> ("matrixParam1", "matrixParam2"))
+val requestBody = body
+val requestUrl = url
+val requestContentType = contentType
 ```
 
 ### Response
