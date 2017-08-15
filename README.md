@@ -72,8 +72,9 @@ Your app will be running at 8080.
 [Simple Server in Kotlin](https://github.com/gabfssilva/geryon/tree/master/kotlin-examples/src/main/kotlin/org/geryon/examples/kotlin/SimpleServer.kt) ~
 [Simple Server in Scala](https://github.com/gabfssilva/geryon/tree/master/scala-examples/src/main/scala/org/geryon/examples/scaladsl/SimpleServer.scala)
 
+## Understanding HTTP handlers
 
-## Exposing HTTP methods using handlers
+### Available methods
 
 For now, these are all the http methods available:
 
@@ -89,7 +90,7 @@ trace
 connect
 ```
 
-## Basic usage of a handler
+### Basic usage of a handler
 
 #### Java
 
@@ -109,7 +110,7 @@ httpMethod("/path") { request -> futureResponse }
 httpMethod("/path") { implicit request => futureResponse }
 ```
 
-## Handler with matcher
+### Handler with matcher
 
 Geryon offers a simple matcher for you implement your own validation, thus you can validate, based on the request, if the handler is the right one.
 
@@ -131,7 +132,7 @@ httpMethod("/path", request -> boolean) { request -> futureResponse }
 httpMethod("/path", request => boolean) { request => futureResponse }
 ```
 
-## Working with path parameters
+### Working with path parameters
 
 #### Java
 
@@ -164,7 +165,7 @@ httpMethod("/path/:myParameter") { implicit request =>
 }
 ```
 
-## Working with query parameters
+### Working with query parameters
 
 #### Java
 
@@ -197,7 +198,7 @@ httpMethod("/path") { implicit request =>
 }
 ```
 
-## Working with matrix parameters
+### Working with matrix parameters
 
 #### Java
 
