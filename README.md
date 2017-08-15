@@ -29,7 +29,9 @@ dependencies {
 
 For now on, every single available feature of Geryon will be showed over here. Since Geryon was developed just to be an HTTP layer for your application, not a fullstack framework, there's not much for you to learn.
 
-## The obligatory Hello World in Java
+## The obligatory Hello World
+
+### in Java
 
 ```java
 //this import does all the trick
@@ -42,7 +44,7 @@ public class Sample {
 }
 ```
 
-## The obligatory Hello World in Kotlin
+### in Kotlin
 
 ```kotlin
 //this import does all the trick
@@ -53,7 +55,7 @@ fun main(args: Array<String>) {
 }
 ```
 
-## The obligatory Hello World in Scala
+### in Scala
 
 ```scala
 //this import does all the trick
@@ -234,6 +236,27 @@ httpMethod("/path") { implicit request =>
    futureResponse
 }
 ```
+
+## Understand the models (Request and Response)
+
+### Request
+
+Basically, a Request contains the following fields:
+
+```
+url: String
+rawPath: String
+body: String
+contentType: String
+method: String
+headers: Map[String, String]
+queryParameters: Map[String, String]
+pathParameters: Map[String, String]
+matrixParameters: Map[String, Map[String, String]]
+```
+
+### ScalaDslRequest and the inherinted request methods
+
 
 ## Changing the http port
 
