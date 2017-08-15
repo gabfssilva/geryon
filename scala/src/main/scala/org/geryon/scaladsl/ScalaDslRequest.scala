@@ -72,8 +72,7 @@ object ScalaDslRequest {
 
     Or, inside a handler:
 
-    handlerFor[RuntimeException] { (exception, request) =>
-       implicit val r = request
+    handlerFor[RuntimeException] { implicit request => exception =>
        ...
     }
   """
