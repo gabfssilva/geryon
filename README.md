@@ -97,19 +97,19 @@ connect
 #### Java
 
 ```java
-httpMethod("/path", request -> futureResponse)
+get("/path", request -> futureResponse)
 ```
 
 #### Kotlin
 
 ```kotlin
-httpMethod("/path") { request -> futureResponse }
+get("/path") { request -> futureResponse }
 ```
 
 #### Scala
 
 ```scala
-httpMethod("/path") { implicit request => futureResponse }
+get("/path") { implicit request => futureResponse }
 ```
 
 ### Handler with matcher
@@ -119,19 +119,19 @@ Geryon offers a simple matcher for you implement your own validation, thus you c
 #### Java
 
 ```java
-httpMethod("/path", request -> boolean, request -> futureResponse)
+get("/path", request -> boolean, request -> futureResponse)
 ```
 
 #### Kotlin
 
 ```kotlin
-httpMethod("/path", request -> boolean) { request -> futureResponse }
+get("/path", request -> boolean) { request -> futureResponse }
 ```
 
 #### Scala
 
 ```scala
-httpMethod("/path", request => boolean) { request => futureResponse }
+get("/path", request => boolean) { request => futureResponse }
 ```
 
 ### Working with path parameters
@@ -139,7 +139,7 @@ httpMethod("/path", request => boolean) { request => futureResponse }
 #### Java
 
 ```java
-httpMethod("/path/:myParameter", request -> {
+get("/path/:myParameter", request -> {
    final String myParameter = request.pathParameters().get("myParameter");
    //do whatever you want to do over here
    return futureResponse;
@@ -149,7 +149,7 @@ httpMethod("/path/:myParameter", request -> {
 #### Kotlin
 
 ```kotlin
-httpMethod("/path/:myParameter") { //in Kotlin, you can also omit the parameter if a function has only one parameter
+get("/path/:myParameter") { //in Kotlin, you can also omit the parameter if a function has only one parameter
    //you can use the parameter using the keyword "it"
    val myParameter = it.pathParameters()["myParameter"]
    //do whatever you want to do over here
@@ -160,7 +160,7 @@ httpMethod("/path/:myParameter") { //in Kotlin, you can also omit the parameter 
 #### Scala
 
 ```scala
-httpMethod("/path/:myParameter") { implicit request =>
+get("/path/:myParameter") { implicit request =>
    val myParameter = pathParameter("myParameter") //or just param("myParameter")
    //do whatever you want to do over here
    futureResponse
@@ -172,7 +172,7 @@ httpMethod("/path/:myParameter") { implicit request =>
 #### Java
 
 ```java
-httpMethod("/path", request -> {
+get("/path", request -> {
    final String myParameter = request.queryParameters().get("myParameter");
    //do whatever you want to do over here
    return futureResponse;
@@ -182,7 +182,7 @@ httpMethod("/path", request -> {
 #### Kotlin
 
 ```kotlin
-httpMethod("/path") { //in Kotlin, you can also omit the parameter if a function has only one parameter
+get("/path") { //in Kotlin, you can also omit the parameter if a function has only one parameter
    //you can use the parameter using the keyword "it"
    val myParameter = it.queryParameters()["myParameter"]
    //do whatever you want to do over here
@@ -193,7 +193,7 @@ httpMethod("/path") { //in Kotlin, you can also omit the parameter if a function
 #### Scala
 
 ```scala
-httpMethod("/path") { implicit request =>
+get("/path") { implicit request =>
    val myParameter = queryParameter("myParameter") //or just param("myParameter")
    //do whatever you want to do over here
    futureResponse
@@ -205,7 +205,7 @@ httpMethod("/path") { implicit request =>
 #### Java
 
 ```java
-httpMethod("/path", request -> {
+get("/path", request -> {
    final String myParameter = request.matrixParameters().get("path").get("myParameter");
    //do whatever you want to do over here
    return futureResponse;
@@ -215,7 +215,7 @@ httpMethod("/path", request -> {
 #### Kotlin
 
 ```kotlin
-httpMethod("/path") { //in Kotlin, you can also omit the parameter if a function has only one parameter
+get("/path") { //in Kotlin, you can also omit the parameter if a function has only one parameter
    //you can use the parameter using the keyword "it"
    val myParameter = it.matrixParameters()["path"]!!["myParameter"]
    //do whatever you want to do over here
@@ -226,7 +226,7 @@ httpMethod("/path") { //in Kotlin, you can also omit the parameter if a function
 #### Scala
 
 ```scala
-httpMethod("/path") { implicit request =>
+get("/path") { implicit request =>
    val myParameter = matrixParameter("path" -> "matrixParameter")
    
    //if you have more than one matrix parameter per path, you can do this:
@@ -242,7 +242,7 @@ httpMethod("/path") { implicit request =>
 #### Java
 
 ```java
-httpMethod("/path", request -> {
+get("/path", request -> {
    final String myParameter = request.headers().get("myParameter");
    //do whatever you want to do over here
    return futureResponse;
@@ -252,7 +252,7 @@ httpMethod("/path", request -> {
 #### Kotlin
 
 ```kotlin
-httpMethod("/path") { //in Kotlin, you can also omit the parameter if a function has only one parameter
+get("/path") { //in Kotlin, you can also omit the parameter if a function has only one parameter
    //you can use the parameter using the keyword "it"
    val myParameter = it.headers()["myParameter"]
    //do whatever you want to do over here
@@ -263,7 +263,7 @@ httpMethod("/path") { //in Kotlin, you can also omit the parameter if a function
 #### Scala
 
 ```scala
-httpMethod("/path") { implicit request =>
+get("/path") { implicit request =>
    val myParameter = header("myParameter")
    //do whatever you want to do over here
    futureResponse
@@ -275,7 +275,7 @@ httpMethod("/path") { implicit request =>
 #### Java
 
 ```java
-httpMethod("/path", request -> {
+post("/path", request -> {
    final String body = request.body();
    //do whatever you want to do over here
    return futureResponse;
@@ -285,7 +285,7 @@ httpMethod("/path", request -> {
 #### Kotlin
 
 ```kotlin
-httpMethod("/path") { //in Kotlin, you can also omit the parameter if a function has only one parameter
+post("/path") { //in Kotlin, you can also omit the parameter if a function has only one parameter
    //you can use the parameter using the keyword "it"
    val body = it.body()
    //do whatever you want to do over here
@@ -296,7 +296,7 @@ httpMethod("/path") { //in Kotlin, you can also omit the parameter if a function
 #### Scala
 
 ```scala
-httpMethod("/path") { implicit request =>
+post("/path") { implicit request =>
    val requestBody = body
    //do whatever you want to do over here
    futureResponse

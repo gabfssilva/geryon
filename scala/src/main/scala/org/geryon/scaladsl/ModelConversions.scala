@@ -2,6 +2,7 @@ package org.geryon.scaladsl
 
 import org.geryon.{Request, Response}
 
+import scala.concurrent.Future
 import scala.language.implicitConversions
 
 /**
