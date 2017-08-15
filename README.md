@@ -25,6 +25,10 @@ dependencies {
   "org.geryon" %% "geryon-scala" % "0.0.4"
 ```
 
+# Tutorial
+
+For now on, every single available feature of Geryon will be showed over here. Since Geryon was developed just to be an HTTP layer for your application, not a fullstack framework, there's not much for you to learn.
+
 ## The obligatory Hello World in Java
 
 ```java
@@ -38,12 +42,6 @@ public class Sample {
 }
 ```
 
-Your app will be running at 8080.
-
-#### More examples in:
-
-[Simple Server in Java](https://github.com/gabfssilva/geryon/tree/master/examples/src/main/java/org/geryon/examples/SimpleServer.java)
-
 ## The obligatory Hello World in Kotlin
 
 ```kotlin
@@ -54,12 +52,6 @@ fun main(args: Array<String>) {
     get("/hello") { supply { "hello, ${it.queryParameters()["name"]}" } }
 }
 ```
-
-Your app will be running at 8080.
-
-#### More examples in Kotlin:
-
-[Simple Server in Kotlin](https://github.com/gabfssilva/geryon/tree/master/kotlin-examples/src/main/kotlin/org/geryon/examples/kotlin/SimpleServer.kt)
 
 ## The obligatory Hello World in Scala
 
@@ -76,11 +68,10 @@ Your app will be running at 8080.
 
 #### More examples in:
 
+[Simple Server in Java](https://github.com/gabfssilva/geryon/tree/master/examples/src/main/java/org/geryon/examples/SimpleServer.java)
+[Simple Server in Kotlin](https://github.com/gabfssilva/geryon/tree/master/kotlin-examples/src/main/kotlin/org/geryon/examples/kotlin/SimpleServer.kt)
 [Simple Server in Scala](https://github.com/gabfssilva/geryon/tree/master/scala-examples/src/main/scala/org/geryon/examples/scaladsl/SimpleServer.scala)
 
-# Tutorial
-
-For now on, every single available feature of Geryon will be showed over here. Since Geryon was developed just to be a HTTP layer for your application, not a fullstack framework, there's not much for you too learn.
 
 ## Exposing HTTP methods using handlers
 
@@ -93,6 +84,9 @@ put
 delete
 patch
 options
+head
+trace
+connect
 ```
 
 ## Basic usage of a handler
