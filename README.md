@@ -303,7 +303,7 @@ post("/path") { implicit request =>
 }
 ```
 
-## Understand the models (Request and Response)
+## Understanding the models (Request and Response)
 
 ### Request
 
@@ -373,9 +373,9 @@ response
    .build()
 ```
 
-### Pre defined responses
+### Predefined responses
 
-There are a bunch of pre defined responses already created to help you return your response in a very easy way:
+There are a bunch of predefined responses already created to help you return your response in a very easy way:
 
 #### Java or Kotlin
 
@@ -431,7 +431,7 @@ internalServerError
 internalServerError("response body")
 ```
 
-Of course, if you feel like we could add other pre defined response, feel free to ask or to pull request. ;)
+Of course, if you feel like we could add other predefined response, feel free to ask or to pull request. ;)
 
 ## Geryon configurations
 
