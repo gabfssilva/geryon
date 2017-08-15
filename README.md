@@ -295,11 +295,111 @@ In Scala, you can use a series of methods which takes an implicit request to avo
 ```scala
 val pathParam = pathParam("pathParam")
 val queryParam = queryParam("queryParam")
+val pathOrQueryParam = param("param") //this method tries to get the path parameter with the informed key, if there is none, tries to get a query parameter
 val header = header("header")
 val (matrixParam1, matrixParam2) = matrixParameter("path" -> ("matrixParam1", "matrixParam2"))
 ```
 
-## Changing the http port
+### Response
+
+```
+body: String
+httpStatus: Int
+headers: Map[String, String]
+contentType: String
+```
+
+### Response Builder
+
+You always create a response using a response builder.
+In Java, Kotlin or Scala, there's already a method called "response", which is a response builder that helps you build your response
+
+#### Java or Kotlin
+
+```java
+response()
+   .body("this is the response body")
+   .httpStatus(201)
+   .header("headerName", "headerValue")
+   .header("headerName2", "headerValue2")
+   .contentType("text/plain")
+   .build();
+```
+#### Scala
+
+```scala
+response
+   .body("this is the response body")
+   .httpStatus(201)
+   .header("headerName" -> "headerValue")
+   .header("headerName2" -> "headerValue2")
+   .contentType("text/plain")
+   .build()
+```
+
+### Pre defined responses
+
+There are a bunch of pre defined responses already created to help you return your response in a very easy way:
+
+####Java or Kotlin
+
+```java
+ok();
+ok("response body");
+
+created("http://location");
+created("http://location", "response body");
+
+noContent();
+
+accepted();
+accepted("response body");
+
+notFound();
+notFound("response body");
+
+conflict();
+conflict("response body");
+
+unauthorized();
+unauthorized("response body");
+
+internalServerError();
+internalServerError("response body");
+```
+
+####Scala
+
+```scala
+ok
+ok("response body")
+
+created("http://location")
+created("http://location", "response body")
+
+noContent
+
+accepted
+accepted("response body")
+
+notFound
+notFound("response body")
+
+conflict
+conflict("response body")
+
+unauthorized
+unauthorized("response body")
+
+internalServerError
+internalServerError("response body")
+```
+
+Of course, if you feel like we could add other pre defined response, feel free to ask or to pull request. ;)
+
+## Geryon configurations
+
+### Changing the http port
 
 #### Java, Kotlin or Scala
 
@@ -307,7 +407,7 @@ val (matrixParam1, matrixParam2) = matrixParameter("path" -> ("matrixParam1", "m
 port(9090);
 ```
 
-## Using a default content type
+### Using a default content type
 
 #### Java, Kotlin or Scala
 
@@ -315,7 +415,7 @@ port(9090);
 defaultContentType("application/json");
 ```
 
-## Changing the event loop thread number
+### Changing the event loop thread number
 
 #### Java, Kotlin or Scala
 
@@ -323,7 +423,7 @@ defaultContentType("application/json");
 eventLoopThreadNumber(2);
 ```
 
-## Adding a default response header
+### Adding a default response header
 
 #### Java or Kotlin
 
@@ -337,7 +437,7 @@ defaultHeader("X-Powered-By", "geryon");
 defaultHeader("X-Powered-By" -> "geryon")
 ```
 
-## Adding an exception handler
+### Adding an exception handler
 
 #### Java
 
@@ -361,5 +461,7 @@ handlerFor[RuntimeException] { implicit request => exception =>
 }
 ```
 
+## How to contribute
 
+//TODO
 
