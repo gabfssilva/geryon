@@ -341,7 +341,7 @@ response
 
 There are a bunch of pre defined responses already created to help you return your response in a very easy way:
 
-####Java or Kotlin
+#### Java or Kotlin
 
 ```java
 ok();
@@ -368,7 +368,7 @@ internalServerError();
 internalServerError("response body");
 ```
 
-####Scala
+#### Scala
 
 ```scala
 ok
