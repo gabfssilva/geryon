@@ -50,7 +50,7 @@ object SimpleServer {
 
         get("/hello/:name") { r ->
             //getting the path parameter
-            val name = r.pathParameters().get("name")
+            val name = r.pathParameters()["name"]
             // since you cannot block your handler,
             // you need to return a CompletableFuture with a response, instead of only a response
             supply { ok("{\"name\": \"$name\"}") }
